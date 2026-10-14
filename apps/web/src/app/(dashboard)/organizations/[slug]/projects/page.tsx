@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { Database } from 'lucide-react';
 import { retrieveOrganizationBySlugFromApi } from '@/features/organization/organization-helpers.server';
 import { retrieveProjectsFromApi } from '@/features/projects/project-helpers.server';
-import { ORG_ROLES } from '@supavolt/constants';
+import { ORG_ROLES } from '@orion/constants';
 import { CreateProjectModal } from '@/features/projects/create-project-modal';
 
 export default async function ProjectsPage({

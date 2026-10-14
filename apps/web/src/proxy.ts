@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { COOKIE_KEYS } from '@supavolt/constants';
+import { COOKIE_KEYS } from '@orion/constants';
 import * as jose from 'jose';
 import { applyAuthCookiesToResponse } from '@/features/auth/cookies';
 

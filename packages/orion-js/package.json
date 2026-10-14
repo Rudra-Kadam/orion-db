@@ -1,7 +1,7 @@
 {
-  "name": "supavolt-js",
+  "name": "orion-js",
   "version": "1.0.0",
-  "description": "The official JavaScript SDK for Supavolt",
+  "description": "The official JavaScript SDK for Orion",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -21,12 +21,12 @@
   "license": "ISC",
   "packageManager": "pnpm@10.9.0",
   "dependencies": {
-    "@supavolt/constants": "workspace:*",
+    "@orion/constants": "workspace:*",
     "socket.io-client": "^4.8.3",
     "uploadthing": "^7.7.4"
   },
   "devDependencies": {
-    "@supavolt/types": "workspace:*",
+    "@orion/types": "workspace:*",
     "tsdown": "^0.22.3",
     "typescript": "^6.0.3"
   }

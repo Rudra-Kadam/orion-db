@@ -1,5 +1,5 @@
 import { IsString, MinLength, MaxLength } from 'class-validator';
-import type { CreateProjectInput } from '@supavolt/types';
+import type { CreateProjectInput } from '@orion/types';
 
 export class CreateProjectDto implements CreateProjectInput {
   @IsString()

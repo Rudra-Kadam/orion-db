@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { ORG_ROLES } from '@supavolt/constants';
-import type { InviteMemberInput, UpdateRoleInput } from '@supavolt/types';
+import { ORG_ROLES } from '@orion/constants';
+import type { InviteMemberInput, UpdateRoleInput } from '@orion/types';
 
 export const inviteSchema = z.object({
   email: z.string().email('Invalid email'),

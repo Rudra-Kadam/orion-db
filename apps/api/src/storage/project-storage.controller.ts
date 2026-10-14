@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common';
 import type { NextFunction, Request, Response } from 'express';
 import { IsNumber, IsString } from 'class-validator';
-import { PROJECT_KEY_ROLES } from '@supavolt/constants';
+import { PROJECT_KEY_ROLES } from '@orion/constants';
 import { createRouteHandler } from 'uploadthing/express';
 import { StorageService } from './storage.service';
 import { storageRouter } from './uploadthing';

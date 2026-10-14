@@ -1,5 +1,5 @@
 import { genUploader } from 'uploadthing/client';
-import type { StorageObject } from '@supavolt/types';
+import type { StorageObject } from '@orion/types';
 
 type StorageUploadRouter = {
   bucketUploader: {
@@ -115,7 +115,7 @@ export class StorageBucketRef {
   }
 }
 
-export class SupavoltStorage {
+export class OrionStorage {
   constructor(
     private projectUrl: string,
     private apiKey: string,

@@ -2,7 +2,7 @@
 
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
-import { COOKIE_KEYS } from '@supavolt/constants';
+import { COOKIE_KEYS } from '@orion/constants';
 import apiClient from '@/lib/axios';
 import { retrieveTokenFromCookie } from '@/server-utils/utils';
 import { ORGANIZATION_INTENT } from './constants';

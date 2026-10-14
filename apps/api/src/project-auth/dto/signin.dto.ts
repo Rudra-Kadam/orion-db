@@ -1,5 +1,5 @@
 import { IsEmail, IsString } from 'class-validator';
-import type { SignInInput } from '@supavolt/types';
+import type { SignInInput } from '@orion/types';
 
 export class SignInDto implements SignInInput {
   @IsEmail()

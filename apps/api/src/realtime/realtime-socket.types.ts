@@ -1,5 +1,5 @@
 import type { DefaultEventsMap, Socket } from 'socket.io';
-import type { PROJECT_KEY_ROLES } from '@supavolt/constants';
+import type { PROJECT_KEY_ROLES } from '@orion/constants';
 
 export interface RealtimeSocketData {
   projectId?: string;

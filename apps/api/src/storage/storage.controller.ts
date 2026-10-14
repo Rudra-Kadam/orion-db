@@ -18,7 +18,7 @@ import { StorageService } from './storage.service';
 import { storageRouter } from './uploadthing';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { OrgRoleGuard } from '../auth/guards/org-role.guard';
-import type { BucketAccess } from '@supavolt/types';
+import type { BucketAccess } from '@orion/types';
 
 class CreateBucketDto {
   @IsString()

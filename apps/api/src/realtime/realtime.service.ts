@@ -2,7 +2,7 @@ import { Injectable, OnModuleDestroy } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Client, neonConfig } from '@neondatabase/serverless';
 import { TriggerService } from './trigger.service';
-import type { RealtimeEvent } from '@supavolt/types';
+import type { RealtimeEvent } from '@orion/types';
 
 neonConfig.webSocketConstructor = WebSocket;
 

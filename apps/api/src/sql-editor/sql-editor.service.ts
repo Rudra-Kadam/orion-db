@@ -10,7 +10,7 @@ import type {
 import { and, desc, eq } from 'drizzle-orm';
 import { DrizzleService } from '../db/drizzle.service';
 import { projects, organizations, queryHistory } from '../db/schema';
-import type { QueryResult } from '@supavolt/types';
+import type { QueryResult } from '@orion/types';
 
 @Injectable()
 export class SqlEditorService {

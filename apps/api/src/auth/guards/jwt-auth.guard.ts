@@ -7,8 +7,8 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { Request } from 'express';
-import { COOKIE_KEYS } from '@supavolt/constants';
-import type { JwtPayload } from '@supavolt/types';
+import { COOKIE_KEYS } from '@orion/constants';
+import type { JwtPayload } from '@orion/types';
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {

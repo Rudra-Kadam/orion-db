@@ -1,5 +1,5 @@
 import { SetMetadata } from '@nestjs/common';
-import type { OrgRole } from '@supavolt/types';
+import type { OrgRole } from '@orion/types';
 
 export const ORG_ROLE_KEY = 'orgRole';
 

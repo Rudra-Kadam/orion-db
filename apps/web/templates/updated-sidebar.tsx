@@ -36,7 +36,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { signOut } from '@/features/auth/sign-out';
-import { OrganizationWithMeta } from '@supavolt/types';
+import { OrganizationWithMeta } from '@orion/types';
 
 const orgNavItem = { icon: Home, label: 'Home', segment: 'projects' } as const;
 

@@ -10,7 +10,7 @@ import { and, eq, isNull } from 'drizzle-orm';
 import { DrizzleService } from '../../db/drizzle.service';
 import { organizations, orgMembers } from '../../db/schema';
 import { ORG_ROLE_KEY } from '../decorators/require-org-role.decorator';
-import type { OrgRole, JwtPayload } from '@supavolt/types';
+import type { OrgRole, JwtPayload } from '@orion/types';
 import { Request } from 'express';
 
 interface AuthenticatedRequest extends Request {

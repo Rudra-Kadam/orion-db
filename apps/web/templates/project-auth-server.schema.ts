@@ -1,6 +1,10 @@
 import { z } from 'zod';
-import { PROJECT_AUTH_INTENT } from './constants';
-import { githubOAuthSchema, googleOAuthSchema, siteUrlSchema } from './client.schema';
+import { PROJECT_AUTH_INTENT } from './project-auth-constants';
+import {
+  githubOAuthSchema,
+  googleOAuthSchema,
+  siteUrlSchema,
+} from './project-auth-client.schema';
 
 export const projectAuthServerSchema = z.discriminatedUnion('intent', [
   z.object({

@@ -1,6 +1,6 @@
 import { io, type Socket } from 'socket.io-client';
-import { REALTIME_EVENTS } from '@supavolt/constants';
-import type { RealtimeEvent } from '@supavolt/types';
+import { REALTIME_EVENTS } from '@orion/constants';
+import type { RealtimeEvent } from '@orion/types';
 
 export type RealtimeCallback = (event: RealtimeEvent) => void;
 
@@ -10,7 +10,7 @@ function getRealtimeSocketUrl(projectUrl: string): string {
   return `${origin}/realtime`;
 }
 
-export class SupavoltRealtime {
+export class OrionRealtime {
   private socket: Socket | null = null;
   private callbacks = new Map<string, Set<RealtimeCallback>>();
 
@@ -39,7 +39,7 @@ export class SupavoltRealtime {
     });
 
     this.socket.on(REALTIME_EVENTS.ERROR, (msg: string) => {
-      console.error('[supavolt-js] realtime error:', msg);
+      console.error('[orion-js] realtime error:', msg);
     });
 
     return this.socket;

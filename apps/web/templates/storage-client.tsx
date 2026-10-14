@@ -40,7 +40,7 @@ import type {
   StorageBucket,
   StorageObject,
   BucketAccess,
-} from '@supavolt/types';
+} from '@orion/types';
 import type { OurStorageRouter } from '../../api/src/storage/uploadthing';
 
 interface StorageClientProps {

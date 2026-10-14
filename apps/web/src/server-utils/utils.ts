@@ -1,6 +1,6 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { COOKIE_KEYS } from '@supavolt/constants';
+import { COOKIE_KEYS } from '@orion/constants';
 
 export async function retrieveTokenFromCookie(): Promise<string> {
   const cookieStore = await cookies();

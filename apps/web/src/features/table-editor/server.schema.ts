@@ -5,7 +5,7 @@ import {
   deleteTableSchema,
   fetchTableSchema,
 } from './client.schema';
-import { TABLE_EDITOR_INTENT } from '@supavolt/constants';
+import { TABLE_EDITOR_INTENT } from '@orion/constants';
 
 export const tableEditorServerSchema = z.discriminatedUnion('intent', [
   z.object({

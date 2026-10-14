@@ -8,7 +8,7 @@ import { DrizzleService } from '../db/drizzle.service';
 import { projects, organizations } from '../db/schema';
 import { CreateTableDto } from './dto/create-table.dto';
 import { AddColumnDto } from './dto/alter-table.dto';
-import type { TableInfo, TableColumn, ColumnType } from '@supavolt/types';
+import type { TableInfo, TableColumn, ColumnType } from '@orion/types';
 
 @Injectable()
 export class TableEditorService {

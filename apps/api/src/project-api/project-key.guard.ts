@@ -7,7 +7,7 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { Request } from 'express';
-import { PROJECT_KEY_ROLES } from '@supavolt/constants';
+import { PROJECT_KEY_ROLES } from '@orion/constants';
 
 export interface ProjectKeyPayload {
   projectId: string;

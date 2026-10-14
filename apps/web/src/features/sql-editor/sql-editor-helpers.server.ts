@@ -1,8 +1,8 @@
 import { redirect } from 'next/navigation';
 import apiClient from '@/lib/axios';
 import { retrieveTokenFromCookie } from '@/server-utils/utils';
-import { COOKIE_KEYS } from '@supavolt/constants';
-import type { QueryHistoryItem } from '@supavolt/types';
+import { COOKIE_KEYS } from '@orion/constants';
+import type { QueryHistoryItem } from '@orion/types';
 
 export async function retrieveSqlHistoryFromApi(
   orgSlug: string,

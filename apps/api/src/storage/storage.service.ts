@@ -13,7 +13,7 @@ import {
   storageBuckets,
   storageObjects,
 } from '../db/schema';
-import type { BucketAccess } from '@supavolt/types';
+import type { BucketAccess } from '@orion/types';
 
 @Injectable()
 export class StorageService {

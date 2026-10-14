@@ -12,8 +12,8 @@ import {
 } from '@nestjs/common';
 import type { Request, Response } from 'express';
 import { ConfigService } from '@nestjs/config';
-import { COOKIE_KEYS } from '@supavolt/constants';
-import type { JwtPayload } from '@supavolt/types';
+import { COOKIE_KEYS } from '@orion/constants';
+import type { JwtPayload } from '@orion/types';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';

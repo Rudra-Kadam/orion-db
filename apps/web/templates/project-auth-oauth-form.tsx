@@ -12,9 +12,9 @@ import {
   FieldLabel,
 } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
-import { projectAuthAction } from './action';
-import { githubOAuthSchema, googleOAuthSchema } from './client.schema';
-import { PROJECT_AUTH_INTENT } from './constants';
+import { projectAuthAction } from './project-auth-action';
+import { githubOAuthSchema, googleOAuthSchema } from './project-auth-client.schema';
+import { PROJECT_AUTH_INTENT } from './project-auth-constants';
 
 function CallbackUrlField({ url }: { url: string }) {
   return (

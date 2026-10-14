@@ -1,8 +1,8 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Supavolt SDK Demo</title>
+    <title>Orion SDK Demo</title>
     <style>
       body {
         font-family: monospace;
@@ -71,11 +71,11 @@
     </style>
   </head>
   <body>
-    <h1>⚡ Supavolt SDK Demo</h1>
+    <h1>⚡ Orion SDK Demo</h1>
 
     <p>Open this page in two tabs. Subscribe in one, insert in the other.</p>
 
-    <div style="margin-bottom: 1rem">
+    <div style="margin-bottom: 1rem;">
       <input
         id="projectUrl"
         placeholder="Project URL"
@@ -89,7 +89,7 @@
       <button type="button" onclick="init()">Connect</button>
     </div>
 
-    <div id="app" style="display: none">
+    <div id="app" style="display:none">
       <h2>📋 DB — Insert into products</h2>
       <input id="productName" placeholder="Product name" />
       <button type="button" onclick="insertRow()">Insert</button>
@@ -104,11 +104,11 @@
       <button
         type="button"
         onclick="unsubscribeRealtime()"
-        style="background: #ef4444; margin-left: 0.5rem"
+        style="background:#ef4444; margin-left:0.5rem"
       >
         Unsubscribe
       </button>
-      <div id="events" style="margin-top: 0.5rem"></div>
+      <div id="events" style="margin-top:0.5rem"></div>
 
       <h2>📁 Storage — list bucket</h2>
       <input
@@ -117,6 +117,7 @@
       />
       <button type="button" onclick="listFiles()">List files</button>
       <pre id="storageResult">—</pre>
+
       <h2>🔐 Auth — Sign up / Sign in</h2>
       <input id="authEmail" type="email" placeholder="Email" />
       <input id="authPassword" type="password" placeholder="Password (min 8)" />
@@ -128,22 +129,22 @@
     <script type="module">
       import { createClient } from '../dist/index.mjs';
 
-      let supavolt;
+      let orion;
       let unsubscribe;
 
       window.init = function () {
         const projectUrl = document.getElementById('projectUrl').value.trim();
         const apiKey = document.getElementById('apiKey').value.trim();
-        supavolt = createClient(projectUrl, apiKey);
+        orion = createClient(projectUrl, apiKey);
         document.getElementById('app').style.display = 'block';
-        console.log('✅ Supavolt client initialized');
+        console.log('✅ Orion client initialized');
       };
 
       window.insertRow = async function () {
         const name = document.getElementById('productName').value.trim();
         if (!name) return;
 
-        const { data, error } = await supavolt
+        const { data, error } = await orion
           .from('products')
           .insert({ name });
 
@@ -153,7 +154,7 @@
       };
 
       window.queryRows = async function () {
-        const { data, error } = await supavolt
+        const { data, error } = await orion
           .from('products')
           .select('*')
           .order('created_at', 'desc')
@@ -165,7 +166,7 @@
       };
 
       window.subscribeRealtime = function () {
-        unsubscribe = supavolt.realtime.subscribe('products', (event) => {
+        unsubscribe = orion.realtime.subscribe('products', (event) => {
           const div = document.createElement('div');
           div.className = `event ${event.type}`;
           div.textContent = `[${event.type}] ${JSON.stringify(event.record)}`;
@@ -183,7 +184,7 @@
         const bucketName = document.getElementById('bucketName').value.trim();
         if (!bucketName) return;
 
-        const { data, error } = await supavolt.storage.from(bucketName).list();
+        const { data, error } = await orion.storage.from(bucketName).list();
 
         document.getElementById('storageResult').textContent = error
           ? `Error: ${error}`
@@ -193,7 +194,7 @@
       window.signUp = async function () {
         const email = document.getElementById('authEmail').value.trim();
         const password = document.getElementById('authPassword').value;
-        const { data, error } = await supavolt.auth.signUp({ email, password });
+        const { data, error } = await orion.auth.signUp({ email, password });
         document.getElementById('authResult').textContent = error
           ? `Error: ${error}`
           : JSON.stringify(data, null, 2);
@@ -202,7 +203,7 @@
       window.signIn = async function () {
         const email = document.getElementById('authEmail').value.trim();
         const password = document.getElementById('authPassword').value;
-        const { data, error } = await supavolt.auth.signIn({ email, password });
+        const { data, error } = await orion.auth.signIn({ email, password });
         document.getElementById('authResult').textContent = error
           ? `Error: ${error}`
           : JSON.stringify(data, null, 2);

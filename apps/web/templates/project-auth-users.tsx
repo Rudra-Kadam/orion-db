@@ -12,7 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import type { ProjectAuthUser } from '@supavolt/types';
+import type { ProjectAuthUser } from '@orion/types';
 import { Mail } from 'lucide-react';
 
 function GithubIcon({ className }: { className?: string }) {

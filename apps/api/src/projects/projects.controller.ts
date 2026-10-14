@@ -5,7 +5,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { OrgRoleGuard } from '../auth/guards/org-role.guard';
 import { RequireOrgRole } from '../auth/decorators/require-org-role.decorator';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
-import type { JwtPayload } from '@supavolt/types';
+import type { JwtPayload } from '@orion/types';
 
 @Controller('orgs/:slug/projects')
 @UseGuards(JwtAuthGuard, OrgRoleGuard)

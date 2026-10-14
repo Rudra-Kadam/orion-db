@@ -27,8 +27,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { COLUMN_TYPES, TABLE_EDITOR_INTENT } from '@supavolt/constants';
-import type { ColumnType } from '@supavolt/types';
+import { COLUMN_TYPES, TABLE_EDITOR_INTENT } from '@orion/constants';
+import type { ColumnType } from '@orion/types';
 import { createTableSchema } from '@/features/table-editor/client.schema';
 import { tableEditorAction } from '@/features/table-editor/action';
 import { cn } from '@/lib/utils';

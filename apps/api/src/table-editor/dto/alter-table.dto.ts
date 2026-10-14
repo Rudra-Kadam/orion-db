@@ -1,6 +1,6 @@
 import { IsIn, IsOptional, IsString } from 'class-validator';
-import { COLUMN_TYPES } from '@supavolt/constants';
-import type { ColumnType } from '@supavolt/types';
+import { COLUMN_TYPES } from '@orion/constants';
+import type { ColumnType } from '@orion/types';
 
 export class AddColumnDto {
   @IsString()

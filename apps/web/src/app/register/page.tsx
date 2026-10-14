@@ -39,7 +39,7 @@ export default function RegisterPage() {
       <Card className="w-full max-w-md shadow-sm">
         <CardHeader>
           <CardTitle>Create an account</CardTitle>
-          <CardDescription>Start building with Supavolt</CardDescription>
+          <CardDescription>Start building with Orion</CardDescription>
         </CardHeader>
         <CardContent>
           {state.error && (

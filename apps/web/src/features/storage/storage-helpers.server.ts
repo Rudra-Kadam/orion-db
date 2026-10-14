@@ -1,8 +1,8 @@
 import { redirect } from 'next/navigation';
 import apiClient from '@/lib/axios';
 import { retrieveTokenFromCookie } from '@/server-utils/utils';
-import { COOKIE_KEYS } from '@supavolt/constants';
-import type { StorageBucket, StorageObject } from '@supavolt/types';
+import { COOKIE_KEYS } from '@orion/constants';
+import type { StorageBucket, StorageObject } from '@orion/types';
 
 export async function retrieveBucketsFromApi(
   orgSlug: string,

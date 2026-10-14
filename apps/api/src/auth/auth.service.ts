@@ -10,12 +10,12 @@ import * as bcrypt from 'bcrypt';
 import { randomBytes } from 'crypto';
 import slugify from 'slugify';
 import { eq } from 'drizzle-orm';
-import { COOKIE_KEYS } from '@supavolt/constants';
+import { COOKIE_KEYS } from '@orion/constants';
 import { DrizzleService } from '../db/drizzle.service';
 import { users, organizations, orgMembers } from '../db/schema';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
-import { JwtPayload } from '@supavolt/types';
+import { JwtPayload } from '@orion/types';
 
 @Injectable()
 export class AuthService {

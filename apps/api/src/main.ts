@@ -33,7 +33,7 @@ async function bootstrap() {
   //     const webUrl = process.env.WEB_URL ?? 'http://localhost:3001';
   //     if (origin === webUrl) return callback(null, true);
 
-  //     // SDK demo: npx serve . from packages/supavolt-js (any localhost port)
+  //     // SDK demo: npx serve . from packages/orion-js (any localhost port)
   //     if (/^http:\/\/localhost(:\d+)?$/.test(origin)) {
   //       return callback(null, true);
   //     }

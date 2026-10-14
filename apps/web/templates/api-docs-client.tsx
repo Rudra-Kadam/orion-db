@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Eye, EyeOff, Copy, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import type { ProjectApiDocs } from '@supavolt/types';
+import type { ProjectApiDocs } from '@orion/types';
 
 export function ApiDocsClient({ docs }: { docs: ProjectApiDocs }) {
   const [showAnonKey, setShowAnonKey] = useState(false);

@@ -1,5 +1,5 @@
 {
-  "name": "supavolt",
+  "name": "orion",
   "private": true,
   "scripts": {
     "dev:api": "pnpm --filter api run start:dev",

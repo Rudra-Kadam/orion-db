@@ -2,10 +2,10 @@
 
 import { revalidatePath } from 'next/cache';
 import { tableEditorServerSchema } from './server.schema';
-import { COOKIE_KEYS, TABLE_EDITOR_INTENT } from '@supavolt/constants';
+import { COOKIE_KEYS, TABLE_EDITOR_INTENT } from '@orion/constants';
 import { retrieveTokenFromCookie } from '@/server-utils/utils';
 import apiClient from '@/lib/axios';
-import type { TableInfo } from '@supavolt/types';
+import type { TableInfo } from '@orion/types';
 
 export type TableEditorActionState = {
   error?: string;

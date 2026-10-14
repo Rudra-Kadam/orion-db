@@ -13,8 +13,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { ORG_ROLES } from '@supavolt/constants';
-import { OrgMemberWithUser, OrgRole } from '@supavolt/types';
+import { ORG_ROLES } from '@orion/constants';
+import { OrgMemberWithUser, OrgRole } from '@orion/types';
 import { membersAction } from './action';
 import { Controller, useForm } from 'react-hook-form';
 import z from 'zod';

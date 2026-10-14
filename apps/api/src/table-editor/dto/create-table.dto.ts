@@ -8,12 +8,12 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { COLUMN_TYPES } from '@supavolt/constants';
+import { COLUMN_TYPES } from '@orion/constants';
 import type {
   CreateTableInput,
   CreateColumnInput,
   ColumnType,
-} from '@supavolt/types';
+} from '@orion/types';
 
 export class CreateColumnDto implements CreateColumnInput {
   @IsString()

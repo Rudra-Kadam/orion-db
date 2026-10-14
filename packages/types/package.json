@@ -1,5 +1,5 @@
 {
-  "name": "@supavolt/types",
+  "name": "@orion/types",
   "version": "0.0.1",
   "private": true,
   "main": "./src/index.ts"

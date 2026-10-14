@@ -11,8 +11,8 @@ import { Server, Socket } from 'socket.io';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { RealtimeService } from './realtime.service';
-import { REALTIME_EVENTS, PROJECT_KEY_ROLES } from '@supavolt/constants';
-import type { RealtimeEvent } from '@supavolt/types';
+import { REALTIME_EVENTS, PROJECT_KEY_ROLES } from '@orion/constants';
+import type { RealtimeEvent } from '@orion/types';
 import type { ProjectKeyPayload } from '../project-api/project-key.guard';
 import type { RealtimeSocket } from './realtime-socket.types';
 

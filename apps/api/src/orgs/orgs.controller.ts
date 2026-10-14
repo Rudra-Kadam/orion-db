@@ -3,7 +3,7 @@ import { OrgsService } from './orgs.service';
 import { CreateOrgDto } from './dto/create-org.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
-import type { JwtPayload } from '@supavolt/types';
+import type { JwtPayload } from '@orion/types';
 
 @Controller('orgs')
 @UseGuards(JwtAuthGuard)

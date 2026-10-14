@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { COLUMN_TYPES } from '@supavolt/constants';
-import type { CreateTableInput } from '@supavolt/types';
+import { COLUMN_TYPES } from '@orion/constants';
+import type { CreateTableInput } from '@orion/types';
 
 export const createColumnSchema = z.object({
   name: z.string().min(1, 'Required'),

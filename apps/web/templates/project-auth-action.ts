@@ -1,11 +1,11 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { COOKIE_KEYS } from '@supavolt/constants';
+import { COOKIE_KEYS } from '@orion/constants';
 import apiClient from '@/lib/axios';
 import { retrieveTokenFromCookie } from '@/server-utils/utils';
-import { PROJECT_AUTH_INTENT } from './constants';
-import { projectAuthServerSchema } from './server.schema';
+import { PROJECT_AUTH_INTENT } from './project-auth-constants';
+import { projectAuthServerSchema } from './project-auth-server.schema';
 
 export type ProjectAuthActionState = {
   error?: string;

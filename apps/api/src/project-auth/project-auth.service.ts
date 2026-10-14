@@ -12,8 +12,8 @@ import * as bcrypt from 'bcrypt';
 import { eq, sql } from 'drizzle-orm';
 import { DrizzleService } from '../db/drizzle.service';
 import { projects } from '../db/schema';
-import { AUTH_PROVIDERS, MAGIC_LINK_EXPIRES_IN } from '@supavolt/constants';
-import type { SignUpInput, SignInInput } from '@supavolt/types';
+import { AUTH_PROVIDERS, MAGIC_LINK_EXPIRES_IN } from '@orion/constants';
+import type { SignUpInput, SignInInput } from '@orion/types';
 
 interface ProjectAuthTokenPayload {
   sub: string;
@@ -167,7 +167,7 @@ export class ProjectAuthService {
     const magicLinkUrl = `${apiUrl}/projects/${projectSlug}/auth/magic-link/verify?token=${linkToken}`;
 
     await this.resend.emails.send({
-      from: 'Supavolt <onboarding@resend.dev>',
+      from: 'Orion <onboarding@resend.dev>',
       to: email,
       subject: 'Your magic link',
       html: `

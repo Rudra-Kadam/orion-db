@@ -18,7 +18,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Play, Clock, History, X } from 'lucide-react';
-import type { QueryResult, QueryHistoryItem } from '@supavolt/types';
+import type { QueryResult, QueryHistoryItem } from '@orion/types';
 
 const MonacoEditor = dynamic(() => import('@monaco-editor/react'), {
   ssr: false,

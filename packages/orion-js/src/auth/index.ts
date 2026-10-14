@@ -8,7 +8,7 @@ export interface AuthResult {
   error: string | null;
 }
 
-export class SupavoltAuth {
+export class OrionAuth {
   private currentToken: string | null = null;
 
   constructor(private projectUrl: string) {}

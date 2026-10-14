@@ -12,7 +12,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import type { Request as ExpressRequest } from 'express';
-import { PROJECT_KEY_ROLES } from '@supavolt/constants';
+import { PROJECT_KEY_ROLES } from '@orion/constants';
 import { ProjectApiService } from './project-api.service';
 import { ProjectKeyGuard, ProjectKeyPayload } from './project-key.guard';
 

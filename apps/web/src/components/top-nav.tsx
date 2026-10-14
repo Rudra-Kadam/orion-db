@@ -12,7 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from './ui/dropdown-menu';
-import { Project } from '@supavolt/types';
+import { Project } from '@orion/types';
 import Link from 'next/link';
 
 interface TopNavProps {

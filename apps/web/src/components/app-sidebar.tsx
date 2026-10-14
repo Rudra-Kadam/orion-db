@@ -39,7 +39,7 @@ import {
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { signOut } from '@/features/auth/sign-out';
 import { cn } from '@/lib/utils';
-import { OrganizationWithMeta } from '@supavolt/types';
+import { OrganizationWithMeta } from '@orion/types';
 
 const orgNavItem = { icon: Home, label: 'Home', segment: 'projects' } as const;
 

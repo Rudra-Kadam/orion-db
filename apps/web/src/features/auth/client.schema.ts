@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import type { LoginInput, RegisterInput } from '@supavolt/types';
+import type { LoginInput, RegisterInput } from '@orion/types';
 
 export const loginSchema = z.object({
   email: z.string().email('Invalid email'),

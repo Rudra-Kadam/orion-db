@@ -1,5 +1,5 @@
 import { IsEmail, IsString, MinLength } from 'class-validator';
-import type { SignUpInput } from '@supavolt/types';
+import type { SignUpInput } from '@orion/types';
 
 export class SignUpDto implements SignUpInput {
   @IsEmail()

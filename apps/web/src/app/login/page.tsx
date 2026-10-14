@@ -39,7 +39,7 @@ export default function LoginPage() {
       <Card className="w-full max-w-md shadow-sm">
         <CardHeader>
           <CardTitle>Welcome back</CardTitle>
-          <CardDescription>Sign in to your Supavolt account</CardDescription>
+          <CardDescription>Sign in to your Orion account</CardDescription>
         </CardHeader>
         <CardContent>
           {state.error && (

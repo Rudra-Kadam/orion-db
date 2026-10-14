@@ -7,7 +7,7 @@ import { ConfigService } from '@nestjs/config';
 import { DrizzleService } from '../db/drizzle.service';
 import { projects, organizations, orgMembers } from '../db/schema';
 import { CreateProjectDto } from './dto/create-project.dto';
-import { PROJECT_KEY_ROLES } from '@supavolt/constants';
+import { PROJECT_KEY_ROLES } from '@orion/constants';
 
 @Injectable()
 export class ProjectsService {

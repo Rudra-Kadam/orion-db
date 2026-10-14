@@ -46,9 +46,9 @@ import {
   ChevronLeft,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import type { TableInfo } from '@supavolt/types';
+import type { TableInfo } from '@orion/types';
 import { tableEditorAction } from '@/features/table-editor/action';
-import { TABLE_EDITOR_INTENT } from '@supavolt/constants';
+import { TABLE_EDITOR_INTENT } from '@orion/constants';
 import { CreateTableDrawer } from './create-table-drawer';
 import { AddColumnDialog } from './add-column-dialog';
 

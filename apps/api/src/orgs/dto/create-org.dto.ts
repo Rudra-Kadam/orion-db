@@ -1,5 +1,5 @@
 import { IsString, MinLength } from 'class-validator';
-import type { CreateOrgInput } from '@supavolt/types';
+import type { CreateOrgInput } from '@orion/types';
 
 export class CreateOrgDto implements CreateOrgInput {
   @IsString()

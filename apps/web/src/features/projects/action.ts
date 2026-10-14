@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { projectsServerSchema } from './server.schema';
 import { PROJECTS_INTENT } from './constants';
-import { COOKIE_KEYS } from '@supavolt/constants';
+import { COOKIE_KEYS } from '@orion/constants';
 import { retrieveTokenFromCookie } from '@/server-utils/utils';
 import apiClient from '@/lib/axios';
 

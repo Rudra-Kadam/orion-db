@@ -9,10 +9,10 @@ export default defineConfig({
   sourcemap: true,
   minify: false,
   deps: {
-    neverBundle: ['@supavolt/types'],
+    neverBundle: ['@orion/types'],
     alwaysBundle: [
       'socket.io-client',
-      '@supavolt/constants',
+      '@orion/constants',
       'uploadthing',
       'uploadthing/client',
     ],

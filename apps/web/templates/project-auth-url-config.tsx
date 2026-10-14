@@ -14,9 +14,9 @@ import {
 import { Input } from '@/components/ui/input';
 import { Check, Copy } from 'lucide-react';
 import { useState } from 'react';
-import { projectAuthAction } from './action';
-import { siteUrlSchema } from './client.schema';
-import { PROJECT_AUTH_INTENT } from './constants';
+import { projectAuthAction } from './project-auth-action';
+import { siteUrlSchema } from './project-auth-client.schema';
+import { PROJECT_AUTH_INTENT } from './project-auth-constants';
 
 type SiteUrlValues = z.infer<typeof siteUrlSchema>;
 

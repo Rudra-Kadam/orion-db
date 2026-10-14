@@ -5,7 +5,7 @@ import { Resend } from 'resend';
 import { and, eq, isNull } from 'drizzle-orm';
 import { DrizzleService } from '../db/drizzle.service';
 import { organizations, orgMembers, users } from '../db/schema';
-import { INVITE_EXPIRES_IN } from '@supavolt/constants';
+import { INVITE_EXPIRES_IN } from '@orion/constants';
 
 interface InvitePayload {
   email: string;
@@ -77,11 +77,11 @@ export class InviteService {
     await this.resend.emails.send({
       from: 'onboarding@resend.dev',
       to: email,
-      subject: `You've been invited to join ${org.name} on Supavolt`,
+      subject: `You've been invited to join ${org.name} on Orion`,
       html: `
         <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
           <h2>You're invited to join ${org.name}</h2>
-          <p>Someone has invited you to collaborate on Supavolt.</p>
+          <p>Someone has invited you to collaborate on Orion.</p>
           <a
             href="${inviteUrl}"
             style="display: inline-block; background: #000; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin: 16px 0;">

@@ -1,6 +1,6 @@
 import { QueryBuilder } from './query-builder';
 
-export class SupavoltDb {
+export class OrionDb {
   constructor(
     private projectUrl: string,
     private apiKey: string,

@@ -3,7 +3,7 @@ import {
   RESERVED_QUERY_PARAMS,
   FILTER_OPERATORS,
   type FilterOperator,
-} from '@supavolt/constants';
+} from '@orion/constants';
 
 export interface ParsedQuery {
   select: string[];

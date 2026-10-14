@@ -31,7 +31,7 @@ const features = [
   {
     title: 'JavaScript SDK',
     description:
-      'Query your backend from any app with the official Supavolt client library.',
+      'Query your backend from any app with the official Orion client library.',
   },
 ];
 
@@ -52,7 +52,7 @@ export default function Home() {
                 <path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z" />
               </svg>
               <span className="text-lg font-semibold tracking-tight">
-                supavolt
+                orion
               </span>
             </Link>
             <nav className="hidden items-center gap-6 text-sm text-[#5c5c5c] md:flex">

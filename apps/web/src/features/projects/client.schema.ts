@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import type { CreateProjectInput } from '@supavolt/types';
+import type { CreateProjectInput } from '@orion/types';
 
 export const createProjectSchema = z.object({
   name: z

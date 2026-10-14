@@ -8,8 +8,8 @@ import { Switch } from '@/components/ui/switch';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Radio, Trash2, Table2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { REALTIME_EVENTS } from '@supavolt/constants';
-import type { RealtimeEvent } from '@supavolt/types';
+import { REALTIME_EVENTS } from '@orion/constants';
+import type { RealtimeEvent } from '@orion/types';
 
 interface RealtimeClientProps {
   orgSlug: string;
