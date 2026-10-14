@@ -1,5 +1,5 @@
 import { IsEmail, IsString, MinLength } from 'class-validator';
-import type { RegisterInput } from '@orion-db/types';
+import type { RegisterInput } from '@supavolt/types';
 
 export class RegisterDto implements RegisterInput {
   @IsEmail()

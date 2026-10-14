@@ -3,19 +3,19 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { JwtService, type JwtSignOptions } from '@nestjs/jwt';
+import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';
 import * as bcrypt from 'bcrypt';
 import { randomBytes } from 'crypto';
+import slugify from 'slugify';
 import { eq } from 'drizzle-orm';
-import { COOKIE_KEYS } from '@orion-db/constants';
-import type { AuthTokens, JwtPayload, OAuthProfile } from '@orion-db/types';
+import { COOKIE_KEYS } from '@supavolt/constants';
 import { DrizzleService } from '../db/drizzle.service';
 import { users, organizations, orgMembers } from '../db/schema';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
-import { generateOrgSlug, upsertOAuthUser } from './oauth.helpers';
+import { JwtPayload } from '@supavolt/types';
 
 @Injectable()
 export class AuthService {
@@ -25,7 +25,7 @@ export class AuthService {
     private configService: ConfigService,
   ) {}
 
-  // cookie helpers
+  // Cookie helpers
   setTokenCookies(
     res: Response,
     tokens: { accessToken: string; refreshToken: string },
@@ -38,6 +38,7 @@ export class AuthService {
       sameSite: 'lax',
       maxAge: 15 * 60 * 1000,
     });
+
     res.cookie(COOKIE_KEYS.REFRESH_TOKEN, tokens.refreshToken, {
       httpOnly: true,
       secure: isProduction,
@@ -46,32 +47,37 @@ export class AuthService {
     });
   }
 
-  clearCookies(res: Response) {
+  clearTokenCookies(res: Response) {
     res.clearCookie(COOKIE_KEYS.ACCESS_TOKEN);
     res.clearCookie(COOKIE_KEYS.REFRESH_TOKEN);
   }
 
+  // Slug helper
+  private generateOrgSlug(name: string): string {
+    const base = slugify(`${name}-org`, { lower: true, strict: true });
+    const suffix = randomBytes(3).toString('hex');
+    return `${base}-${suffix}`;
+  }
+
   // JWT signing
-  private signTokens(userId: string, email: string): AuthTokens {
-    const payload: JwtPayload = { sub: userId, email };
+  private signTokens(userId: string, email: string) {
+    const payload = { sub: userId, email };
 
     const accessToken = this.jwtService.sign(payload, {
-      secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
-      expiresIn: (this.configService.get('JWT_ACCESS_EXPIRES_IN') ??
-        '15m') as JwtSignOptions['expiresIn'],
+      secret: this.configService.get('JWT_ACCESS_SECRET'),
+      expiresIn: this.configService.get('JWT_ACCESS_EXPIRES_IN'),
     });
 
     const refreshToken = this.jwtService.sign(payload, {
-      secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
-      expiresIn: (this.configService.get('JWT_REFRESH_EXPIRES_IN') ??
-        '7d') as JwtSignOptions['expiresIn'],
+      secret: this.configService.get('JWT_REFRESH_SECRET'),
+      expiresIn: this.configService.get('JWT_REFRESH_EXPIRES_IN'),
     });
 
     return { accessToken, refreshToken };
   }
 
-  // email + password
-  async register(dto: RegisterDto): Promise<AuthTokens> {
+  // Email + Password
+  async register(dto: RegisterDto) {
     const existing = await this.drizzle.db
       .select()
       .from(users)
@@ -93,7 +99,7 @@ export class AuthService {
       .insert(organizations)
       .values({
         name: `${dto.name}'s Org`,
-        slug: generateOrgSlug(dto.name),
+        slug: this.generateOrgSlug(dto.name),
       })
       .returning();
 
@@ -106,7 +112,7 @@ export class AuthService {
     return this.signTokens(user.id, user.email);
   }
 
-  async login(dto: LoginDto): Promise<AuthTokens> {
+  async login(dto: LoginDto) {
     const [user] = await this.drizzle.db
       .select()
       .from(users)
@@ -125,123 +131,126 @@ export class AuthService {
     return this.signTokens(user.id, user.email);
   }
 
-  /**
-   * Sign in / sign up via an OAuth profile.
-   * Upserts user + provider link, provisions a default org for new users,
-   * and returns fresh tokens.
-   */
-  async oauthLogin(profile: OAuthProfile): Promise<AuthTokens> {
-    const { user } = await upsertOAuthUser(this.drizzle.db, profile);
-    return this.signTokens(user.id, user.email);
-  }
-
-  async refreshTokens(refreshToken: string): Promise<AuthTokens> {
-    let payload: JwtPayload;
+  async refreshTokens(refreshToken: string) {
     try {
-      payload = await this.jwtService.verifyAsync<JwtPayload>(refreshToken, {
-        secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
+      const payload = this.jwtService.verify<JwtPayload>(refreshToken, {
+        secret: this.configService.get('JWT_REFRESH_SECRET'),
       });
+
+      const [user] = await this.drizzle.db
+        .select()
+        .from(users)
+        .where(eq(users.id, payload.sub))
+        .limit(1);
+
+      if (!user) throw new UnauthorizedException();
+
+      return this.signTokens(user.id, user.email);
     } catch {
       throw new UnauthorizedException('Invalid refresh token');
     }
+  }
 
-    const [user] = await this.drizzle.db
+  // OAuth upsert helpers
+  async handleOAuthUser(profile: {
+    email: string;
+    name: string;
+    avatarUrl: string | null;
+  }) {
+    let [user] = await this.drizzle.db
       .select()
       .from(users)
-      .where(eq(users.id, payload.sub))
+      .where(eq(users.email, profile.email))
       .limit(1);
 
     if (!user) {
-      throw new UnauthorizedException('Invalid refresh token');
+      const [newUser] = await this.drizzle.db
+        .insert(users)
+        .values({
+          email: profile.email,
+          name: profile.name,
+          avatarUrl: profile.avatarUrl,
+        })
+        .returning();
+
+      user = newUser;
+
+      const [org] = await this.drizzle.db
+        .insert(organizations)
+        .values({
+          name: `${profile.name}'s Org`,
+          slug: this.generateOrgSlug(profile.name),
+        })
+        .returning();
+
+      await this.drizzle.db.insert(orgMembers).values({
+        orgId: org.id,
+        userId: user.id,
+        role: 'admin',
+      });
     }
 
     return this.signTokens(user.id, user.email);
   }
 
-  createOAuthState(): string {
-    return randomBytes(32).toString('base64url');
-  }
-
-  getGoogleAuthUrl(state: string): string {
+  getGoogleAuthUrl() {
     const params = new URLSearchParams({
       client_id: this.configService.get<string>('GOOGLE_CLIENT_ID')!,
       redirect_uri: this.configService.get<string>('GOOGLE_CALLBACK_URL')!,
       response_type: 'code',
       scope: 'openid email profile',
-      state,
+      access_type: 'offline',
     });
 
     return `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
   }
 
-  async handleGoogleCallback(code: string): Promise<AuthTokens> {
-    try {
-      const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: new URLSearchParams({
-          code,
-          client_id: this.configService.get<string>('GOOGLE_CLIENT_ID')!,
-          client_secret: this.configService.get<string>('GOOGLE_CLIENT_SECRET')!,
-          redirect_uri: this.configService.get<string>('GOOGLE_CALLBACK_URL')!,
-          grant_type: 'authorization_code',
-        }),
-      });
+  async handleGoogleCallback(code: string) {
+    const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        code,
+        client_id: this.configService.get<string>('GOOGLE_CLIENT_ID')!,
+        client_secret: this.configService.get<string>('GOOGLE_CLIENT_SECRET')!,
+        redirect_uri: this.configService.get<string>('GOOGLE_CALLBACK_URL')!,
+        grant_type: 'authorization_code',
+      }),
+    });
 
-      if (!tokenRes.ok) {
-        throw new UnauthorizedException('Failed to exchange Google OAuth code');
-      }
+    const tokenData = (await tokenRes.json()) as { access_token: string };
 
-      const tokenData = (await tokenRes.json()) as {
-        access_token: string;
-      };
+    const profileRes = await fetch(
+      'https://www.googleapis.com/oauth2/v3/userinfo',
+      {
+        headers: { Authorization: `Bearer ${tokenData.access_token}` },
+      },
+    );
 
-      const userRes = await fetch('https://openidconnect.googleapis.com/v1/userinfo', {
-        headers: {
-          Authorization: `Bearer ${tokenData.access_token}`,
-        },
-      });
+    const profile = (await profileRes.json()) as {
+      email: string;
+      name: string;
+      picture: string | null;
+    };
 
-      if (!userRes.ok) {
-        throw new UnauthorizedException('Failed to get Google profile');
-      }
-
-      const userData = (await userRes.json()) as {
-        sub: string;
-        email: string;
-        name?: string;
-        picture?: string;
-      };
-
-      const { user: dbUser } = await upsertOAuthUser(this.drizzle.db, {
-        provider: 'google',
-        providerAccountId: userData.sub,
-        email: userData.email,
-        name: userData.name || userData.email.split('@')[0],
-        avatarUrl: userData.picture || null,
-      });
-
-      return this.signTokens(dbUser.id, dbUser.email);
-    } catch (error) {
-      if (error instanceof UnauthorizedException) throw error;
-      throw new UnauthorizedException('Failed to authenticate with Google');
-    }
+    return this.handleOAuthUser({
+      email: profile.email,
+      name: profile.name,
+      avatarUrl: profile.picture ?? null,
+    });
   }
 
-  getGithubAuthUrl(state: string): string {
+  getGithubAuthUrl() {
     const params = new URLSearchParams({
       client_id: this.configService.get<string>('GITHUB_CLIENT_ID')!,
       redirect_uri: this.configService.get<string>('GITHUB_CALLBACK_URL')!,
       scope: 'read:user user:email',
-      state,
     });
 
     return `https://github.com/login/oauth/authorize?${params.toString()}`;
   }
 
-  async handleGithubCallback(code: string): Promise<AuthTokens> {
+  async handleGithubCallback(code: string) {
     const tokenRes = await fetch(
       'https://github.com/login/oauth/access_token',
       {
@@ -254,62 +263,47 @@ export class AuthService {
           client_id: this.configService.get<string>('GITHUB_CLIENT_ID'),
           client_secret: this.configService.get<string>('GITHUB_CLIENT_SECRET'),
           code,
+          redirect_uri: this.configService.get<string>('GITHUB_CALLBACK_URL'),
         }),
       },
     );
 
-    const tokenData = (await tokenRes.json()) as {
-      access_token?: string;
-    };
+    const tokenData = (await tokenRes.json()) as { access_token: string };
 
-    if (!tokenRes.ok || !tokenData.access_token) {
-      throw new UnauthorizedException('Failed to exchange GitHub OAuth code');
-    }
-
-    const userRes = await fetch('https://api.github.com/user', {
+    const profileRes = await fetch('https://api.github.com/user', {
       headers: {
-        Accept: 'application/vnd.github+json',
         Authorization: `Bearer ${tokenData.access_token}`,
+        Accept: 'application/vnd.github+json',
       },
     });
 
-    if (!userRes.ok) {
-      throw new UnauthorizedException('Failed to get GitHub profile');
-    }
-
-    const userData = (await userRes.json()) as {
-      id: number;
+    const profile = (await profileRes.json()) as {
       email: string | null;
       name: string | null;
       login: string;
       avatar_url: string | null;
     };
 
-    let email = userData.email;
+    let email = profile.email;
     if (!email) {
-      const emailsRes = await fetch('https://api.github.com/user/emails', {
+      const emailRes = await fetch('https://api.github.com/user/emails', {
         headers: {
-          Accept: 'application/vnd.github+json',
           Authorization: `Bearer ${tokenData.access_token}`,
+          Accept: 'application/vnd.github+json',
         },
       });
-      if (!emailsRes.ok) {
-        throw new UnauthorizedException('Failed to get GitHub email');
-      }
-      const emails = (await emailsRes.json()) as Array<{
+      const emails = (await emailRes.json()) as {
         email: string;
         primary: boolean;
-      }>;
-      const primary = emails.find((e) => e.primary);
-      email = primary?.email ?? emails[0]?.email ?? '';
+        verified: boolean;
+      }[];
+      email = emails.find((e) => e.primary && e.verified)?.email ?? null;
     }
 
-    return this.oauthLogin({
-      provider: 'github',
-      providerAccountId: String(userData.id),
-      email,
-      name: userData.name || userData.login,
-      avatarUrl: userData.avatar_url ?? null,
+    return this.handleOAuthUser({
+      email: email!,
+      name: profile.name ?? profile.login,
+      avatarUrl: profile.avatar_url ?? null,
     });
   }
 }

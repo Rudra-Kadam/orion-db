@@ -2,6 +2,7 @@ packages:
   - "apps/*"
   - "packages/*"
 allowBuilds:
-  bcrypt: false
+  bcrypt: true
   esbuild: true
-  unrs-resolver: false
+  sharp: true
+  unrs-resolver: true

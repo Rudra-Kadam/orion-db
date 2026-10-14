@@ -1,13 +1,12 @@
 {
-  "name": "orion-db",
+  "name": "supavolt",
   "private": true,
   "scripts": {
-    "dev:api": "pnpm --filter api start:dev",
-    "dev:web": "pnpm --filter web dev",
-    "dev": "concurrently \"pnpm dev:api\" \"pnpm dev:web\""
+    "dev:api": "pnpm --filter api run start:dev",
+    "dev:web": "pnpm --filter web run dev",
+    "dev": "concurrently \"pnpm run dev:api\" \"pnpm run dev:web\""
   },
   "devDependencies": {
-    "@neon/config": "^1.7.2",
-    "concurrently": "^10.0.5"
+    "concurrently": "^10.0.3"
   }
 }

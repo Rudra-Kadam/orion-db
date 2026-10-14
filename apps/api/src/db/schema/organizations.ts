@@ -1,14 +1,14 @@
 import { pgEnum, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 import { users } from './users';
 
-export const orgRolesEnum = pgEnum('org_roles', ['admin', 'developer']);
+export const orgRoleEnum = pgEnum('org_role', ['admin', 'developer']);
 
 export const organizations = pgTable('organizations', {
   id: uuid().defaultRandom().primaryKey(),
   name: text('name').notNull(),
-  slug: text('slug').unique().notNull(),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
-  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  slug: text('slug').notNull().unique(),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });
 
 export const orgMembers = pgTable('org_members', {
@@ -19,8 +19,9 @@ export const orgMembers = pgTable('org_members', {
   userId: uuid('user_id')
     .notNull()
     .references(() => users.id, { onDelete: 'cascade' }),
-  role: orgRolesEnum('role').notNull().default('developer'),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
+  role: orgRoleEnum('role').notNull().default('developer'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  removedAt: timestamp('removed_at'),
 });
 
 export type Organization = typeof organizations.$inferSelect;

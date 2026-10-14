@@ -1,12 +1,12 @@
-'use server'
+'use server';
 
 import { redirect } from 'next/navigation';
 import { authServerSchema } from './server.schema';
 import { AUTH_INTENT } from './constants';
+import { applyAuthCookiesFromResponse } from './cookies';
 
 export type AuthActionState = {
   error?: string;
-  success?: string;
   fieldErrors?: Record<string, string[]>;
 };
 
@@ -19,7 +19,10 @@ export async function authAction(
 
   if (!parsed.success) {
     return {
-      fieldErrors: parsed.error.flatten().fieldErrors as Record<string, string[]>,
+      fieldErrors: parsed.error.flatten().fieldErrors as Record<
+        string,
+        string[]
+      >,
     };
   }
 
@@ -32,38 +35,33 @@ export async function authAction(
       res = await fetch(`${process.env.API_URL}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
         body: JSON.stringify(data),
       });
+
+      if (!res.ok) {
+        const body = await res.json();
+        return { error: body.message ?? 'Login failed' };
+      }
+
       break;
     }
+
     case AUTH_INTENT.REGISTER: {
       res = await fetch(`${process.env.API_URL}/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
         body: JSON.stringify(data),
       });
+
+      if (!res.ok) {
+        const body = await res.json();
+        return { error: body.message ?? 'Registration failed' };
+      }
+
       break;
     }
-    default: {
-      return { error: 'Invalid intent' };
-    }
   }
 
-  if (!res.ok) {
-    const body = await res.json();
-    return { error: body.message ?? 'Request failed' };
-  }
-
-  // Temporary: show success message instead of redirecting to non-existent dashboard
-  if (intent === AUTH_INTENT.REGISTER) {
-    return { 
-      error: undefined,
-      fieldErrors: undefined,
-      success: 'User added to database successfully!' 
-    };
-  }
-
+  await applyAuthCookiesFromResponse(res!);
   redirect('/dashboard');
 }
