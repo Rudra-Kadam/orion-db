@@ -55,31 +55,47 @@ export default function Home() {
       {/* Nav */}
       <header className="border-b border-[#e6e6e6] bg-[#fafafa]/80 backdrop-blur-sm">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6 lg:px-8">
-          <div className="flex items-center gap-10">
-            <Link href="/" className="flex items-center gap-2.5">
+          <div className="flex items-center gap-6">
+            <Link
+              href="/"
+              className="group flex items-center gap-2.5 rounded-lg px-2 py-1 transition-all duration-200 hover:bg-black/[0.04] active:scale-95"
+            >
               <svg
                 viewBox="0 0 24 24"
-                className="h-6 w-6 text-[#3ecf8e]"
+                className="h-6 w-6 text-[#3ecf8e] transition-transform duration-300 ease-out group-hover:scale-125 group-hover:rotate-12 group-hover:drop-shadow-[0_0_8px_rgba(62,207,142,0.7)]"
                 fill="currentColor"
                 aria-hidden
               >
                 <path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z" />
               </svg>
-              <span className="text-lg font-semibold tracking-tight">
+              <span className="text-lg font-bold tracking-tight text-[#1c1c1c] transition-colors duration-200 group-hover:text-[#0b6343]">
                 orion
               </span>
             </Link>
-            <nav className="hidden items-center gap-6 text-sm text-[#5c5c5c] md:flex">
-              <span className="cursor-default hover:text-[#1c1c1c]">
-                Product
-              </span>
-              <span className="cursor-default hover:text-[#1c1c1c]">
-                Developers
-              </span>
-              <span className="cursor-default hover:text-[#1c1c1c]">
-                Pricing
-              </span>
-              <span className="cursor-default hover:text-[#1c1c1c]">Docs</span>
+            <nav className="hidden items-center gap-1.5 text-sm md:flex">
+              {[
+                { label: 'Product', href: '#features' },
+                {
+                  label: 'Developers',
+                  href: 'https://github.com/Tirth678/orion-db',
+                },
+                { label: 'Pricing', href: '#pricing' },
+                {
+                  label: 'Docs',
+                  href: 'https://github.com/Tirth678/orion-db#readme',
+                },
+              ].map((item) => (
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  className="group relative rounded-md px-3.5 py-2 text-sm font-medium text-[#5c5c5c] transition-all duration-200 hover:bg-[#3ecf8e]/12 hover:text-[#0d3322] active:scale-95"
+                >
+                  <span className="relative z-10 transition-colors duration-200 group-hover:text-[#0b6343]">
+                    {item.label}
+                  </span>
+                  <span className="absolute bottom-1 left-1/2 h-[2px] w-0 -translate-x-1/2 rounded-full bg-[#3ecf8e] shadow-[0_0_8px_rgba(62,207,142,0.7)] transition-all duration-300 ease-out group-hover:w-3/5" />
+                </Link>
+              ))}
             </nav>
           </div>
           <div className="flex items-center gap-2">
@@ -137,7 +153,7 @@ export default function Home() {
         </div>
 
         {/* Feature grid */}
-        <div className="mt-20 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div id="features" className="mt-20 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {features.map((feature) => {
             const Icon = feature.icon;
             return (
