@@ -101,9 +101,12 @@ export default function Home() {
           <div className="flex items-center gap-2">
             <Link
               href="/login"
-              className="hidden rounded-lg px-3.5 py-2 text-sm font-medium text-[#5c5c5c] transition-all duration-200 hover:bg-black/[0.05] hover:text-[#1c1c1c] active:scale-95 sm:inline-flex items-center gap-1.5"
+              className="group relative hidden rounded-md px-3.5 py-2 text-sm font-medium text-[#5c5c5c] transition-all duration-200 hover:bg-[#3ecf8e]/12 hover:text-[#0d3322] active:scale-95 sm:inline-flex items-center"
             >
-              Sign in
+              <span className="relative z-10 transition-colors duration-200 group-hover:text-[#0b6343]">
+                Sign in
+              </span>
+              <span className="absolute bottom-1 left-1/2 h-[2px] w-0 -translate-x-1/2 rounded-full bg-[#3ecf8e] shadow-[0_0_8px_rgba(62,207,142,0.7)] transition-all duration-300 ease-out group-hover:w-3/5" />
             </Link>
             <Link
               href="/dashboard"
