@@ -59,4 +59,4 @@ The following are not installed by pnpm and require service credentials or URLs:
 - Email: `RESEND_API_KEY` is needed for invitation and project-auth email.
 - File storage: configure UploadThing credentials for the API's UploadThing integration.
 
-Start both local applications with `pnpm dev` (API on port 3000 and web on port 3001 by default).
+Start both local applications with `pnpm dev` (Web on port 3000 and API on port 3001 by default to align with OAuth callback configurations).
