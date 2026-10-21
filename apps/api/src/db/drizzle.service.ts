@@ -10,7 +10,9 @@ export class DrizzleService implements OnModuleInit {
   constructor(private config: ConfigService) {}
 
   onModuleInit() {
-    const databaseUrl = this.config.get<string>('DATABASE_URL')!;
+    const databaseUrl =
+      this.config.get<string>('DATABASE_URL') ||
+      'postgresql://postgres:postgres@localhost:5432/orion';
     this.db = drizzle(databaseUrl, { schema });
   }
 }

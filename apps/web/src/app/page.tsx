@@ -1,35 +1,50 @@
 import Link from 'next/link';
+import {
+  Database,
+  ShieldCheck,
+  Zap,
+  HardDrive,
+  Code2,
+  Boxes,
+  ArrowUpRight,
+} from 'lucide-react';
 
 const features = [
   {
     title: 'Postgres Database',
     description:
       'Every project is a full Postgres database. Portable, extensible, and ready to query.',
+    icon: Database,
   },
   {
     title: 'Authentication',
     description:
       'Add user sign ups and logins. Email, magic link, and OAuth providers built in.',
+    icon: ShieldCheck,
   },
   {
     title: 'Realtime',
     description:
       'Build multiplayer experiences with real-time data synchronization.',
+    icon: Zap,
   },
   {
     title: 'Storage',
     description:
       'Store, organize, and serve large files — from avatars to videos.',
+    icon: HardDrive,
   },
   {
     title: 'Data APIs',
     description:
       'Instant ready-to-use REST APIs for every table in your project.',
+    icon: Code2,
   },
   {
     title: 'JavaScript SDK',
     description:
       'Query your backend from any app with the official Orion client library.',
+    icon: Boxes,
   },
 ];
 
@@ -117,23 +132,36 @@ export default function Home() {
         </div>
 
         {/* Feature grid */}
-        <div className="mt-20 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {features.map((feature) => (
-            <div
-              key={feature.title}
-              className="group rounded-xl border border-[#e6e6e6] bg-white p-6 transition hover:border-[#3ecf8e]/40 hover:shadow-sm"
-            >
-              <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-[#3ecf8e]/10">
-                <div className="h-2 w-2 rounded-full bg-[#3ecf8e]" />
+        <div className="mt-20 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {features.map((feature) => {
+            const Icon = feature.icon;
+            return (
+              <div
+                key={feature.title}
+                className="group relative cursor-pointer overflow-hidden rounded-xl border border-[#e6e6e6] bg-white p-6 transition-all duration-300 ease-out hover:-translate-y-1.5 hover:border-[#3ecf8e]/60 hover:shadow-[0_16px_36px_-8px_rgba(62,207,142,0.18)]"
+              >
+                {/* Background ambient spotlight gradient on hover */}
+                <div className="pointer-events-none absolute -inset-px rounded-xl opacity-0 transition-opacity duration-300 group-hover:opacity-100 bg-gradient-to-br from-[#3ecf8e]/[0.08] via-transparent to-transparent" />
+
+                {/* Animated top accent bar */}
+                <div className="absolute inset-x-0 top-0 h-[2px] w-0 bg-gradient-to-r from-transparent via-[#3ecf8e] to-transparent transition-all duration-500 ease-out group-hover:w-full" />
+
+                <div className="relative mb-5 flex items-center justify-between">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-[#3ecf8e]/10 text-[#3ecf8e] transition-all duration-300 ease-out group-hover:scale-110 group-hover:bg-[#3ecf8e] group-hover:text-[#1c1c1c] group-hover:shadow-[0_0_20px_rgba(62,207,142,0.45)]">
+                    <Icon className="h-5 w-5 transition-transform duration-300 group-hover:rotate-6" />
+                  </div>
+                  <ArrowUpRight className="h-5 w-5 text-[#3ecf8e] opacity-0 -translate-x-2 translate-y-2 transition-all duration-300 ease-out group-hover:opacity-100 group-hover:translate-x-0 group-hover:translate-y-0" />
+                </div>
+
+                <h3 className="relative text-base font-semibold text-[#1c1c1c] transition-colors duration-200 group-hover:text-[#0b6343]">
+                  {feature.title}
+                </h3>
+                <p className="relative mt-2 text-sm leading-relaxed text-[#5c5c5c] transition-colors duration-200 group-hover:text-[#2d2d2d]">
+                  {feature.description}
+                </p>
               </div>
-              <h3 className="text-base font-semibold text-[#1c1c1c]">
-                {feature.title}
-              </h3>
-              <p className="mt-2 text-sm leading-relaxed text-[#5c5c5c]">
-                {feature.description}
-              </p>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         <p className="mt-16 text-center text-sm text-[#8c8c8c]">

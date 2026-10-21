@@ -30,7 +30,10 @@ export class ProjectAuthService {
     private jwtService: JwtService,
     private configService: ConfigService,
   ) {
-    this.resend = new Resend(this.configService.get<string>('RESEND_API_KEY'));
+    this.resend = new Resend(
+      this.configService.get<string>('RESEND_API_KEY') ||
+        're_placeholder_dev_key',
+    );
   }
 
   private async getProject(projectSlug: string) {

@@ -22,7 +22,9 @@ export class InviteService {
     private jwtService: JwtService,
     private configService: ConfigService,
   ) {
-    this.resend = new Resend(this.configService.get('RESEND_API_KEY'));
+    this.resend = new Resend(
+      this.configService.get('RESEND_API_KEY') || 're_placeholder_dev_key',
+    );
   }
 
   async sendInvite(orgSlug: string, email: string) {
