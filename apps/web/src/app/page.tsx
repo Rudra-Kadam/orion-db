@@ -7,6 +7,7 @@ import {
   Code2,
   Boxes,
   ArrowUpRight,
+  ArrowRight,
 } from 'lucide-react';
 
 const features = [
@@ -81,18 +82,20 @@ export default function Home() {
               <span className="cursor-default hover:text-[#1c1c1c]">Docs</span>
             </nav>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <Link
               href="/login"
-              className="hidden text-sm text-[#5c5c5c] hover:text-[#1c1c1c] sm:inline"
+              className="hidden rounded-lg px-3.5 py-2 text-sm font-medium text-[#5c5c5c] transition-all duration-200 hover:bg-black/[0.05] hover:text-[#1c1c1c] active:scale-95 sm:inline-flex items-center gap-1.5"
             >
               Sign in
             </Link>
             <Link
               href="/dashboard"
-              className="rounded-md bg-[#3ecf8e] px-4 py-2 text-sm font-medium text-[#1c1c1c] transition hover:bg-[#38bc81]"
+              className="group relative inline-flex items-center gap-1.5 overflow-hidden rounded-lg bg-[#3ecf8e] px-4 py-2 text-sm font-semibold text-[#0d3322] shadow-[0_2px_8px_rgba(62,207,142,0.25)] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:bg-[#34c483] hover:shadow-[0_8px_20px_-2px_rgba(62,207,142,0.5)] active:translate-y-0 active:scale-[0.98]"
             >
-              Dashboard
+              <span className="pointer-events-none absolute -left-full top-0 h-full w-full bg-gradient-to-r from-transparent via-white/35 to-transparent transition-all duration-700 ease-out group-hover:left-full" />
+              <span>Dashboard</span>
+              <ArrowRight className="h-4 w-4 transition-transform duration-200 ease-out group-hover:translate-x-0.5" />
             </Link>
           </div>
         </div>
@@ -110,17 +113,19 @@ export default function Home() {
             <div className="mt-10 flex flex-wrap items-center gap-4">
               <Link
                 href="/register"
-                className="rounded-md bg-[#3ecf8e] px-6 py-3 text-sm font-medium text-[#1c1c1c] transition hover:bg-[#38bc81]"
+                className="group relative inline-flex items-center gap-2 overflow-hidden rounded-lg bg-[#3ecf8e] px-6 py-3 text-sm font-semibold text-[#0d3322] shadow-[0_4px_14px_rgba(62,207,142,0.3)] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:bg-[#34c483] hover:shadow-[0_12px_28px_-4px_rgba(62,207,142,0.5)] active:translate-y-0 active:scale-[0.98]"
               >
-                Start your project
+                <span className="pointer-events-none absolute -left-full top-0 h-full w-full bg-gradient-to-r from-transparent via-white/35 to-transparent transition-all duration-700 ease-out group-hover:left-full" />
+                <span>Start your project</span>
+                <ArrowRight className="h-4 w-4 transition-transform duration-200 ease-out group-hover:translate-x-1" />
               </Link>
               <Link
                 href="https://www.youtube.com/@codewithlari"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="rounded-md border border-[#d4d4d4] bg-white px-6 py-3 text-sm font-medium text-[#1c1c1c] transition hover:border-[#a3a3a3] hover:bg-[#f5f5f5]"
+                className="group inline-flex items-center gap-2 rounded-lg border border-[#d4d4d4] bg-white px-6 py-3 text-sm font-medium text-[#1c1c1c] shadow-xs transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-[#a3a3a3] hover:bg-[#f9fafb] hover:shadow-md active:translate-y-0 active:scale-[0.98]"
               >
-                Watch the tutorial
+                <span>Watch the tutorial</span>
               </Link>
             </div>
           </div>
