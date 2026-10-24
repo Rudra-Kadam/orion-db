@@ -1,0 +1,59 @@
+﻿
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90mC:/Users/ASUS/Desktop/awt_proj/orion-db/apps/web[39m
+      [2mCoverage enabled with [22m[33mv8[39m
+
+[90mstdout[2m | src/features/auth/cookies.spec.ts[2m > [22m[2mFrontend Auth Cookie Utilities[2m > [22m[2mWEB-AUTH-01 | Parse full Set-Cookie header with all directives | Expected: Structured ParsedCookie
+[22m[39mPASS | WEB-AUTH-01 | Full Set-Cookie header parsing | Input: access_token=jwt.token.val; Path=/api; Max-Age=900; HttpOnly; Secure; SameSite=Lax | Expected: Parsed cookie with name="access_token", maxAge=900, httpOnly=true, secure=true, sameSite="lax" | Actual: name="access_token", maxAge=900, httpOnly=true, secure=true
+
+[90mstdout[2m | src/features/auth/cookies.spec.ts[2m > [22m[2mFrontend Auth Cookie Utilities[2m > [22m[2mWEB-AUTH-02 | Parse minimal Set-Cookie header | Expected: Sensible defaults applied
+[22m[39mPASS | WEB-AUTH-02 | Minimal cookie header parsing | Input: refresh_token=refresh.val.123 | Expected: Default path="/", httpOnly=false, secure=false, sameSite="lax" | Actual: path="/", httpOnly=false, secure=false
+
+[90mstdout[2m | src/features/auth/cookies.spec.ts[2m > [22m[2mFrontend Auth Cookie Utilities[2m > [22m[2mWEB-AUTH-03 | Identify standard Orion auth cookies | Expected: Known constants recognized
+[22m[39mPASS | WEB-AUTH-03 | Auth cookie constant recognition | Input: Testing access_token, refresh_token, session_random | Expected: access_token=true, refresh_token=true, session_random=false | Actual: access=true, refresh=true, random=false
+
+ [32mΓ£ô[39m src/features/auth/cookies.spec.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+[90mstdout[2m | src/features/projects/client.schema.spec.ts[2m > [22m[2mFrontend Form Zod Validation Schemas (Projects)[2m > [22m[2mWEB-PROJ-01 | Valid project creation form data | Expected: Passes validation
+[22m[39mPASS | WEB-PROJ-01 | Project form valid name check | Input: name="Apollo Analytics Engine" | Expected: safeParse success = true | Actual: success=true
+
+[90mstdout[2m | src/features/projects/client.schema.spec.ts[2m > [22m[2mFrontend Form Zod Validation Schemas (Projects)[2m > [22m[2mWEB-PROJ-02 | Project name too short (< 2 chars) | Expected: Rejection (at least 2 characters)
+[22m[39mPASS | WEB-PROJ-02 | Project name min length check | Input: name="A" (1 char) | Expected: safeParse success = false, message="Name must be at least 2 characters" | Actual: success=false, error="Name must be at least 2 characters"
+
+[90mstdout[2m | src/features/projects/client.schema.spec.ts[2m > [22m[2mFrontend Form Zod Validation Schemas (Projects)[2m > [22m[2mWEB-PROJ-03 | Project name too long (> 50 chars) | Expected: Rejection (at most 50 characters)
+[22m[39mPASS | WEB-PROJ-03 | Project name max length check | Input: name length=91 (> 50 chars) | Expected: safeParse success = false, message="Name must be at most 50 characters" | Actual: success=false, error="Name must be at most 50 characters"
+
+[90mstdout[2m | src/features/auth/client.schema.spec.ts[2m > [22m[2mFrontend Form Zod Validation Schemas (Auth)[2m > [22m[2mWEB-VAL-01 | Valid login form data | Expected: Passes validation
+[22m[39mPASS | WEB-VAL-01 | Login form schema validation success | Input: email=student@college.edu, password=****** | Expected: safeParse success = true | Actual: success=true
+
+[90mstdout[2m | src/features/auth/client.schema.spec.ts[2m > [22m[2mFrontend Form Zod Validation Schemas (Auth)[2m > [22m[2mWEB-VAL-02 | Login form with invalid email | Expected: Rejection (Invalid email)
+[22m[39mPASS | WEB-VAL-02 | Login form email format check | Input: email="not-an-email" | Expected: safeParse success = false, message="Invalid email" | Actual: success=false, errors=Invalid email
+
+[90mstdout[2m | src/features/auth/client.schema.spec.ts[2m > [22m[2mFrontend Form Zod Validation Schemas (Auth)[2m > [22m[2mWEB-VAL-03 | Login form with empty password | Expected: Rejection (Password is required)
+[22m[39mPASS | WEB-VAL-03 | Login form empty password check | Input: password="" (empty string) | Expected: safeParse success = false, message="Password is required" | Actual: success=false, errors=Password is required
+
+[90mstdout[2m | src/features/auth/client.schema.spec.ts[2m > [22m[2mFrontend Form Zod Validation Schemas (Auth)[2m > [22m[2mWEB-VAL-04 | Register form with password < 8 chars | Expected: Rejection
+[22m[39mPASS | WEB-VAL-04 | Register form password min length check | Input: password="short" (length 5) | Expected: safeParse success = false, message contains "at least 8 characters" | Actual: success=false, message="Password must be at least 8 characters"
+
+[90mstdout[2m | src/features/auth/client.schema.spec.ts[2m > [22m[2mFrontend Form Zod Validation Schemas (Auth)[2m > [22m[2mWEB-VAL-05 | Register form with valid data | Expected: Passes validation
+[22m[39mPASS | WEB-VAL-05 | Register form schema validation success | Input: name=Alex Student, email=alex@college.edu | Expected: safeParse success = true | Actual: success=true
+
+ [32mΓ£ô[39m src/features/projects/client.schema.spec.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32mΓ£ô[39m src/features/auth/client.schema.spec.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m3 passed[39m[22m[90m (3)[39m
+[2m      Tests [22m [1m[32m11 passed[39m[22m[90m (11)[39m
+[2m   Start at [22m 11:06:31
+[2m   Duration [22m 491ms[2m (import 66%, worker 18%, transform 11%, tests 5%)[22m
+
+[34m % [39m[2mCoverage report from [22m[33mv8[39m
+-------------------|---------|----------|---------|---------|-------------------
+File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+-------------------|---------|----------|---------|---------|-------------------
+All files          |   66.66 |       60 |      50 |   69.04 |                   
+ src               |   57.14 |      100 |     100 |   57.14 |                   
+  test-logger.ts   |   57.14 |      100 |     100 |   57.14 | 18-20             
+ src/features/auth |   67.56 |       60 |      40 |   70.58 |                   
+  client.schema.ts |     100 |      100 |     100 |     100 |                   
+  cookies.ts       |   65.71 |       60 |      40 |   68.75 | 63-84             
+ ...tures/projects |     100 |      100 |     100 |     100 |                   
+  client.schema.ts |     100 |      100 |     100 |     100 |                   
+-------------------|---------|----------|---------|---------|-------------------

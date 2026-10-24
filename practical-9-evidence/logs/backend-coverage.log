@@ -1,0 +1,94 @@
+﻿---------------------------------------|---------|----------|---------|---------|--------------------------------------------------
+File                                   | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s                                
+---------------------------------------|---------|----------|---------|---------|--------------------------------------------------
+All files                              |   14.55 |    14.38 |    7.56 |   14.69 |                                                  
+ src                                   |   22.72 |        0 |   33.33 |   15.78 |                                                  
+  app.controller.ts                    |     100 |      100 |     100 |     100 |                                                  
+  app.module.ts                        |       0 |      100 |     100 |       0 | 1-37                                             
+  app.service.ts                       |      80 |      100 |       0 |   66.66 | 6                                                
+  main.ts                              |       0 |        0 |       0 |       0 | 1-50                                             
+ src/auth                              |   31.34 |    42.85 |      12 |   30.15 |                                                  
+  auth.controller.ts                   |   60.41 |       75 |   27.27 |   58.69 | 38-39,56-57,66-69,75,81,86-88,96,101-103,110-111 
+  auth.module.ts                       |       0 |      100 |     100 |       0 | 1-14                                             
+  auth.service.ts                      |   16.88 |       25 |       0 |   15.06 | 23-303                                           
+ src/auth/decorators                   |   22.22 |      100 |       0 |      25 |                                                  
+  current-user.decorator.ts            |      50 |      100 |       0 |      50 | 7-8                                              
+  require-org-role.decorator.ts        |       0 |      100 |       0 |       0 | 1-7                                              
+ src/auth/dto                          |     100 |      100 |     100 |     100 |                                                  
+  login.dto.ts                         |     100 |      100 |     100 |     100 |                                                  
+  register.dto.ts                      |     100 |      100 |     100 |     100 |                                                  
+ src/auth/guards                       |      45 |    33.33 |      50 |   45.71 |                                                  
+  jwt-auth.guard.ts                    |     100 |       80 |     100 |     100 | 16                                               
+  org-role.guard.ts                    |       0 |        0 |       0 |       0 | 1-58                                             
+ src/db                                |   46.66 |       50 |       0 |   45.45 |                                                  
+  db.module.ts                         |       0 |      100 |     100 |       0 | 1-9                                              
+  drizzle.service.ts                   |      70 |       50 |       0 |    62.5 | 10-16                                            
+ src/db/schema                         |   81.25 |      100 |       0 |   81.25 |                                                  
+  index.ts                             |     100 |      100 |     100 |     100 |                                                  
+  organizations.ts                     |   71.42 |      100 |       0 |   71.42 | 18-21                                            
+  projects.ts                          |      75 |      100 |       0 |      75 | 8                                                
+  query-history.ts                     |      75 |      100 |       0 |      75 | 8                                                
+  storage-buckets.ts                   |      80 |      100 |       0 |      80 | 10                                               
+  storage-objects.ts                   |      75 |      100 |       0 |      75 | 8                                                
+  users.ts                             |     100 |      100 |     100 |     100 |                                                  
+ src/members                           |   11.82 |    16.66 |       0 |   11.11 |                                                  
+  invite.service.ts                    |    28.2 |     37.5 |       0 |      25 | 21-147                                           
+  members.controller.ts                |       0 |        0 |       0 |       0 | 1-54                                             
+  members.module.ts                    |       0 |      100 |     100 |       0 | 1-13                                             
+  members.service.ts                   |       0 |        0 |       0 |       0 | 1-80                                             
+ src/members/dto                       |       0 |      100 |     100 |       0 |                                                  
+  invite-member.dto.ts                 |       0 |      100 |     100 |       0 | 1-5                                              
+  update-role.dto.ts                   |       0 |      100 |     100 |       0 | 1-7                                              
+ src/orgs                              |       0 |        0 |       0 |       0 |                                                  
+  orgs.controller.ts                   |       0 |        0 |       0 |       0 | 1-25                                             
+  orgs.module.ts                       |       0 |      100 |     100 |       0 | 1-12                                             
+  orgs.service.ts                      |       0 |        0 |       0 |       0 | 1-84                                             
+ src/orgs/dto                          |       0 |      100 |     100 |       0 |                                                  
+  create-org.dto.ts                    |       0 |      100 |     100 |       0 | 1-7                                              
+ src/project-api                       |   36.12 |    33.33 |   29.03 |   39.05 |                                                  
+  project-api.controller.ts            |       0 |        0 |       0 |       0 | 1-93                                             
+  project-api.module.ts                |       0 |      100 |     100 |       0 | 1-12                                             
+  project-api.service.ts               |       0 |        0 |       0 |       0 | 1-194                                            
+  project-key.guard.ts                 |     100 |       80 |     100 |     100 | 20                                               
+  query-parser.ts                      |   87.93 |       70 |     100 |   92.59 | 37,45,49,118                                     
+ src/project-auth                      |       0 |        0 |       0 |       0 |                                                  
+  project-auth-dashboard.controller.ts |       0 |        0 |       0 |       0 | 1-33                                             
+  project-auth.controller.ts           |       0 |        0 |       0 |       0 | 1-109                                            
+  project-auth.module.ts               |       0 |      100 |     100 |       0 | 1-13                                             
+  project-auth.service.ts              |       0 |        0 |       0 |       0 | 1-441                                            
+ src/project-auth/dto                  |       0 |      100 |     100 |       0 |                                                  
+  magic-link.dto.ts                    |       0 |      100 |     100 |       0 | 1-6                                              
+  signin.dto.ts                        |       0 |      100 |     100 |       0 | 1-9                                              
+  signup.dto.ts                        |       0 |      100 |     100 |       0 | 1-10                                             
+ src/projects                          |       0 |        0 |       0 |       0 |                                                  
+  projects.controller.ts               |       0 |        0 |       0 |       0 | 1-32                                             
+  projects.module.ts                   |       0 |      100 |     100 |       0 | 1-12                                             
+  projects.service.ts                  |       0 |        0 |       0 |       0 | 1-134                                            
+ src/projects/dto                      |       0 |      100 |     100 |       0 |                                                  
+  create-project.dto.ts                |       0 |      100 |     100 |       0 | 1-8                                              
+ src/realtime                          |       0 |        0 |       0 |       0 |                                                  
+  realtime.controller.ts               |       0 |        0 |       0 |       0 | 1-61                                             
+  realtime.gateway.ts                  |       0 |        0 |       0 |       0 | 1-146                                            
+  realtime.module.ts                   |       0 |      100 |     100 |       0 | 1-14                                             
+  realtime.service.ts                  |       0 |        0 |       0 |       0 | 1-99                                             
+  trigger.service.ts                   |       0 |        0 |       0 |       0 | 1-90                                             
+ src/sql-editor                        |   22.53 |    20.58 |   26.66 |   22.22 |                                                  
+  sql-editor.controller.ts             |       0 |        0 |       0 |       0 | 1-26                                             
+  sql-editor.module.ts                 |       0 |      100 |     100 |       0 | 1-12                                             
+  sql-editor.service.ts                |      32 |    26.92 |   33.33 |   30.43 | 20-21,46-147                                     
+ src/sql-editor/dto                    |       0 |      100 |     100 |       0 |                                                  
+  execute-query.dto.ts                 |       0 |      100 |     100 |       0 | 1-6                                              
+ src/storage                           |       0 |        0 |       0 |       0 |                                                  
+  project-storage.controller.ts        |       0 |        0 |       0 |       0 | 1-138                                            
+  storage.controller.ts                |       0 |        0 |       0 |       0 | 1-116                                            
+  storage.module.ts                    |       0 |      100 |     100 |       0 | 1-14                                             
+  storage.service.ts                   |       0 |        0 |       0 |       0 | 1-190                                            
+  uploadthing.ts                       |       0 |      100 |       0 |       0 | 1-19                                             
+ src/table-editor                      |       0 |        0 |       0 |       0 |                                                  
+  table-editor.controller.ts           |       0 |        0 |       0 |       0 | 1-108                                            
+  table-editor.module.ts               |       0 |      100 |     100 |       0 | 1-12                                             
+  table-editor.service.ts              |       0 |        0 |       0 |       0 | 1-358                                            
+ src/table-editor/dto                  |       0 |      100 |       0 |       0 |                                                  
+  alter-table.dto.ts                   |       0 |      100 |     100 |       0 | 1-14                                             
+  create-table.dto.ts                  |       0 |      100 |       0 |       0 | 1-53                                             
+---------------------------------------|---------|----------|---------|---------|--------------------------------------------------
