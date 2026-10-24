@@ -19,7 +19,7 @@ import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { CurrentUser } from './decorators/current-user.decorator';
-import { InviteService } from 'src/members/invite.service';
+import { InviteService } from '../members/invite.service';
 
 @Controller('auth')
 export class AuthController {
