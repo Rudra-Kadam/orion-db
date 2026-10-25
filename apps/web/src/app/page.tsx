@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { SiteFooter } from '@/components/site-footer';
+import { FeaturesShowcase } from '@/components/features-showcase';
 import {
   Database,
   ShieldCheck,
@@ -194,6 +195,10 @@ export default function Home() {
         <p className="mt-16 text-center text-sm text-[#8c8c8c] dark:text-muted-foreground/80">
           Use one or all. Best-of-breed products. Integrated as a platform.
         </p>
+
+        <div className="mt-14">
+          <FeaturesShowcase />
+        </div>
       </main>
 
       <SiteFooter />
