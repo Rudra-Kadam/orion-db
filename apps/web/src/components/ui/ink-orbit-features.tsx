@@ -237,10 +237,10 @@ function Title({ text, className = "ib-h2", as = "h2" }: { text: string; classNa
 }
 
 function Mark({ size = 18 }: { size?: number }) {
-  // the brand glyph: a folded N
+  // the brand glyph: an Orion "O" — a single even ring
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M3 21V3h4.2l9.6 12.2V3H21v18h-4.2L7.2 8.8V21z" fill="currentColor" />
+      <circle cx="12" cy="12" r="8.3" fill="none" stroke="currentColor" strokeWidth="3.6" />
     </svg>
   )
 }
@@ -335,10 +335,10 @@ function FlowCard({ brand, features, uid, reduced, inView }: { brand: string; fe
     return () => clearInterval(t)
   }, [reduced, inView])
   const team = [
-    { x: 58, y: 38, name: "Daniel · editing Q3 plan" },
-    { x: 104, y: 22, name: "Liyana · reviewing" },
+    { x: 58, y: 38, name: "Daniel · editing schema" },
+    { x: 104, y: 22, name: "Liyana · reviewing rows" },
     { x: 150, y: 40, name: "Aaron · shipping v2.4" },
-    { x: 46, y: 92, name: "Priya · in Insights" },
+    { x: 46, y: 92, name: "Priya · in SQL editor" },
     { x: 146, y: 114, name: "Marcus · idle" },
   ]
   const L1 = "M117,67 C196,67 210,100 262,100" // out of the team node …
@@ -353,7 +353,7 @@ function FlowCard({ brand, features, uid, reduced, inView }: { brand: string; fe
     <div className="ib-frame ib-frame-hover ib-wide">
       <Brackets />
       <div className="ib-card" style={{ padding: 0, overflow: "hidden" }}>
-        <svg className="ib-diagram" viewBox="0 0 640 178" role="img" aria-label={"Your team's edits flow through " + brand + " into finished reports"}>
+        <svg className="ib-diagram" viewBox="0 0 640 178" role="img" aria-label={"Your tables and API keys flow through " + brand + " into live responses"}>
           <defs>
             <radialGradient id={glow} cx="320" cy="110" r="190" gradientUnits="userSpaceOnUse">
               <stop offset="0" stopColor="var(--ib-raise)" stopOpacity="1" />
@@ -403,7 +403,7 @@ function FlowCard({ brand, features, uid, reduced, inView }: { brand: string; fe
                   </g>
                   <circle cx="11" cy="11" r="10.5" fill="none" stroke="var(--ib-paper)" strokeWidth="1.5" />
                 </svg>
-                <circle cx={m.x + 8} cy={m.y + 8} r="2.6" fill={i === 4 ? "var(--ib-faint)" : "#22c55e"} stroke="var(--ib-paper)" className={i === 4 ? undefined : "ib-presence"} />
+                <circle cx={m.x + 8} cy={m.y + 8} r="2.6" fill={i === 4 ? "var(--ib-faint)" : "var(--ib-accent,#22c55e)"} stroke="var(--ib-paper)" className={i === 4 ? undefined : "ib-presence"} />
                 <g className="ib-av-tip" transform={"translate(" + m.x + "," + (m.y - 18) + ")"}>
                   <rect x={-m.name.length * 2.45 - 6} y="-9" width={m.name.length * 4.9 + 12} height="14" rx="2" fill="var(--ib-inv)" />
                   <text x="0" y="1" textAnchor="middle" fontSize="7.5" fill="var(--ib-inv-ink)" fontFamily="var(--ib-sans)">
@@ -451,7 +451,7 @@ function FlowCard({ brand, features, uid, reduced, inView }: { brand: string; fe
                 {k === 0 && (
                   <>
                     <text x="10" y="16" fontSize="7" fill="var(--ib-muted)" fontFamily="var(--ib-mono)">
-                      {"REPORT #" + reports}
+                      {"RESPONSE #" + reports}
                     </text>
                     <rect x="10" y="24" width="64" height="5" rx="1" fill="var(--ib-ink)" opacity=".75" />
                     <rect x="10" y="33" width="92" height="3" rx="1" fill="var(--ib-line-strong)" />

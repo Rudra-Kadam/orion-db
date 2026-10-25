@@ -25,6 +25,7 @@ const LIGHT_VARS = {
   '--ib-bracket': '#c4c4c4',
   '--ib-inv': '#161616',
   '--ib-inv-ink': '#fafafa',
+  '--ib-accent': '#3ecf8e',
 } as React.CSSProperties;
 
 const DARK_VARS = {
@@ -42,6 +43,7 @@ const DARK_VARS = {
   '--ib-bracket': '#444444',
   '--ib-inv': '#fafafa',
   '--ib-inv-ink': '#0a0a0a',
+  '--ib-accent': '#3ecf8e',
 } as React.CSSProperties;
 
 export function FeaturesShowcase() {
@@ -60,28 +62,28 @@ export function FeaturesShowcase() {
     <InkOrbitFeatures
       theme={dark ? 'dark' : 'light'}
       brand="Orion"
-      tag="Inside the platform"
-      title={'Everything you need,\n*already* wired'}
+      tag="Why Orion"
+      title={'Everything around your Postgres,\n*already* built'}
       collaboration={{
         title: 'Realtime channels',
         description:
-          'Every table gets a WebSocket channel. Subscribe once and your app receives each insert, update and delete the moment it commits.',
+          'Subscribe to any table from orion-js and every insert, update and delete arrives the moment it commits — no polling, no triggers to write.',
       }}
       reports={{
-        title: 'Auto-generated REST APIs',
+        title: 'Instant REST APIs',
         description:
-          'Create a table and its endpoints exist — filtering, ordering and pagination included, scoped by your project keys.',
+          'Create a table in the visual editor and its endpoints exist: select, filter, order and paginate, guarded by your anon or service-role key.',
       }}
       integrations={{
         title: 'One project, every primitive',
         description:
-          'Postgres schema, storage buckets, end-user auth and API keys live together, so the dashboard, REST API and SDK never disagree.',
+          'Schema, storage buckets, end-user auth and API keys live side by side, so the dashboard, the REST API and orion-js read the same source.',
         tools: ['Buckets', 'Uploads', 'Sessions', 'API keys'],
       }}
       insights={{
-        title: 'Query insights',
+        title: 'SQL editor & history',
         description:
-          'Every statement run in the SQL editor is logged with its duration and row count, so slow queries surface before your users notice.',
+          'Run raw Postgres from the browser, then reopen any past statement from history with its row count and execution time still attached.',
         values: [18, 22, 21, 27, 25, 31, 30, 36, 41, 45, 52, 60],
         forecastFrom: 8,
       }}
