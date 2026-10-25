@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { SiteFooter } from '@/components/site-footer';
 import {
   Database,
   ShieldCheck,
@@ -194,6 +195,8 @@ export default function Home() {
           Use one or all. Best-of-breed products. Integrated as a platform.
         </p>
       </main>
+
+      <SiteFooter />
     </div>
   );
 }
