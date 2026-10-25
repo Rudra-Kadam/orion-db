@@ -38,6 +38,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { signOut } from '@/features/auth/sign-out';
+import { SidebarThemeToggle } from '@/components/theme-toggle';
 import { cn } from '@/lib/utils';
 import { OrganizationWithMeta } from '@orion/types';
 
@@ -239,6 +240,7 @@ export function AppSidebar({ orgs, user }: AppSidebarProps) {
 
       <SidebarFooter>
         <SidebarMenu>
+          <SidebarThemeToggle />
           <SidebarMenuItem>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

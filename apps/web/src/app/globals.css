@@ -111,7 +111,33 @@
     @apply border-border outline-ring/50;
   }
 
+  html {
+    background-color: var(--background);
+  }
+
   body {
     @apply bg-background text-foreground font-sans antialiased;
+  }
+}
+
+/* Smooth cross-fade while the theme swaps. The class only lives on <html> for
+   the duration of the transition, so it never slows down normal interactions. */
+.theme-transition,
+.theme-transition *,
+.theme-transition *::before,
+.theme-transition *::after {
+  transition-property: background-color, border-color, color, fill, stroke,
+    box-shadow, opacity, transform !important;
+  transition-duration: 300ms !important;
+  transition-timing-function: ease-in-out !important;
+  transition-delay: 0ms !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-transition,
+  .theme-transition *,
+  .theme-transition *::before,
+  .theme-transition *::after {
+    transition-duration: 0ms !important;
   }
 }

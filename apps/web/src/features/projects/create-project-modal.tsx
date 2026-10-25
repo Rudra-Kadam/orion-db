@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionState, useState } from 'react';
+import { useEffect, useActionState, useRef, useState } from 'react';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -20,7 +20,7 @@ import {
 import { Input } from '@/components/ui/input';
 import z from 'zod';
 import { createProjectSchema } from './client.schema';
-import { projectsAction } from './action';
+import { projectsAction, type ProjectsActionState } from './action';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { PROJECTS_INTENT } from './constants';
@@ -41,11 +41,17 @@ export function CreateProjectModal({ slug }: CreateProjectModalProps) {
     defaultValues: { name: '' },
   });
 
-  // close modal on success
-  if (state.success && open) {
+  // close modal on success; must run in an effect because updating state
+  // during render is not allowed. The ref stops a stale success result from
+  // immediately closing the dialog when it is reopened.
+  const handledState = useRef<ProjectsActionState | null>(null);
+
+  useEffect(() => {
+    if (!state.success || !open || handledState.current === state) return;
+    handledState.current = state;
     setOpen(false);
     form.reset();
-  }
+  }, [state, open, form]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

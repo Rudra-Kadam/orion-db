@@ -14,6 +14,7 @@ import {
 } from './ui/dropdown-menu';
 import { Project } from '@orion/types';
 import Link from 'next/link';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 interface TopNavProps {
   projects: Project[];
@@ -63,6 +64,8 @@ export function TopNav({ projects }: TopNavProps) {
           </DropdownMenuContent>
         </DropdownMenu>
       )}
+
+      <ThemeToggle className="ml-auto" />
     </header>
   );
 }
