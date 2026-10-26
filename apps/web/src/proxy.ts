@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { COOKIE_KEYS } from '@orion/constants';
 import * as jose from 'jose';
-import { applyAuthCookiesToResponse } from '@/features/auth/cookies';
+import { applyAuthCookiesToResponse } from './features/auth/cookies';
 
 const AUTH_ROUTES = ['/login', '/register'];
 
