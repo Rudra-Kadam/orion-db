@@ -4,7 +4,9 @@
   "scripts": {
     "dev:api": "pnpm --filter api run start:dev",
     "dev:web": "pnpm --filter web run dev",
-    "dev": "concurrently \"pnpm run dev:api\" \"pnpm run dev:web\""
+    "dev": "concurrently \"pnpm run dev:api\" \"pnpm run dev:web\"",
+    "test": "pnpm --filter api test && pnpm --filter web test",
+    "test:cov": "pnpm --filter api test:cov && pnpm --filter web test:cov"
   },
   "devDependencies": {
     "concurrently": "^10.0.3"
