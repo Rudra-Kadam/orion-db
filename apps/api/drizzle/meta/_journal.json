@@ -33,13 +33,6 @@
     {
       "idx": 4,
       "version": "7",
-      "when": 1783364205337,
-      "tag": "0004_colossal_argent",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
       "when": 1783462235124,
       "tag": "0005_real_wolverine",
       "breakpoints": true
