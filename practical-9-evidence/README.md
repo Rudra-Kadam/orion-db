@@ -43,8 +43,14 @@ practical-9-evidence/
 
 ## 3. How to Run the Automated Tests
 
-### 3.1 Backend Test Execution (Jest)
-To run all 24 backend automated tests with formatted CLI feedback:
+### 3.1 Whole Project Test Execution (Root Monorepo)
+To run all 62 automated tests across the whole project in a single command:
+```powershell
+pnpm test
+```
+
+### 3.2 Backend Test Execution (Jest)
+To run all 41 backend automated tests with formatted CLI feedback:
 ```powershell
 pnpm --filter api test
 ```
@@ -54,8 +60,8 @@ To run with full code coverage metrics:
 pnpm --filter api test:cov
 ```
 
-### 3.2 Frontend Test Execution (Vitest)
-To run all 11 frontend automated tests:
+### 3.3 Frontend Test Execution (Vitest)
+To run all 21 frontend automated tests:
 ```powershell
 pnpm --filter web test
 ```
@@ -101,9 +107,9 @@ PASS | SYS-01 | System health check endpoint | Input: GET /health | Expected: st
 ---
 
 ## 5. Summary Results & Metrics
-
-* **Total Test Suites Executed:** 9
-* **Total Automated Test Cases:** 35
-* **Pass Rate:** 100% (35 Passed, 0 Failed, 0 Blocked)
-* **Execution Duration:** ~5.66 seconds total
+ 
+* **Total Test Suites Executed:** 16
+* **Total Automated Test Cases:** 62 (41 Backend + 21 Frontend)
+* **Pass Rate:** 100% (62 Passed, 0 Failed, 0 Blocked)
+* **Execution Duration:** ~4.5 seconds total
 * **Safety Adherence:** 100% hermetic test execution with zero destructive interactions on production databases.
