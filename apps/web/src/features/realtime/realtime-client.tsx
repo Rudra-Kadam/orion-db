@@ -27,7 +27,7 @@ const EVENT_COLORS: Record<string, string> = {
 
 function getRealtimeSocketBaseUrl(): string {
   const apiUrl =
-    process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000/api';
+    process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001/api';
   // WebSocket namespace is NOT under /api
   return apiUrl.replace(/\/api\/?$/, '');
 }
@@ -92,7 +92,7 @@ export function RealtimeClient({
       if (!socket) return;
 
       const apiUrl =
-        process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000/api';
+        process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001/api';
 
       if (enabled) {
         const res = await fetch(

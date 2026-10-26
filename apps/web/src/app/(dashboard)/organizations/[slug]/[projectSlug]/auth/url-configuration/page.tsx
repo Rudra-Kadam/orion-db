@@ -8,10 +8,10 @@ export default async function AuthUrlConfigurationPage({
 }) {
   const { slug, projectSlug } = await params;
   const apiBaseUrl =
-    process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000/api';
+    process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001/api';
   const settings = await retrieveOAuthSettingsFromApi(slug, projectSlug);
   const fallbackSiteUrl =
-    process.env.NEXT_PUBLIC_WEB_URL ?? 'http://localhost:3001';
+    process.env.NEXT_PUBLIC_WEB_URL ?? 'http://localhost:3000';
 
   return (
     <ProjectAuthUrlConfig

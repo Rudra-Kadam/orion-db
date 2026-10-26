@@ -109,7 +109,7 @@ export function ProjectAuthUrlConfig({
                   <Input
                     {...field}
                     id="siteUrl"
-                    placeholder="http://localhost:3001"
+                    placeholder="http://localhost:3000"
                     aria-invalid={fieldState.invalid}
                   />
                   {fieldState.invalid && (

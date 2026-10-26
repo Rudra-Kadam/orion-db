@@ -411,7 +411,7 @@ export class ProjectAuthService {
     return (
       project.siteUrl ??
       this.configService.get<string>('WEB_URL') ??
-      'http://localhost:3001'
+      'http://localhost:3000'
     );
   }
 

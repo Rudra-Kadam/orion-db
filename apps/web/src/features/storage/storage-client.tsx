@@ -57,7 +57,7 @@ function formatBytes(bytes: number): string {
 }
 
 function getApiBaseUrl(): string {
-  return process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000/api';
+  return process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001/api';
 }
 
 export function StorageClient({

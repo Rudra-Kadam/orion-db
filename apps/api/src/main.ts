@@ -22,7 +22,7 @@ async function bootstrap() {
   );
 
   app.enableCors({
-    origin: process.env.WEB_URL ?? 'http://localhost:3001',
+    origin: process.env.WEB_URL ?? 'http://localhost:3000',
     credentials: true,
   });
   // app.enableCors({
@@ -30,7 +30,7 @@ async function bootstrap() {
   //     // allow server-to-server / curl (no Origin header)
   //     if (!origin) return callback(null, true);
 
-  //     const webUrl = process.env.WEB_URL ?? 'http://localhost:3001';
+  //     const webUrl = process.env.WEB_URL ?? 'http://localhost:3000';
   //     if (origin === webUrl) return callback(null, true);
 
   //     // SDK demo: npx serve . from packages/orion-js (any localhost port)
@@ -43,7 +43,7 @@ async function bootstrap() {
   //   credentials: true,
   // });
 
-  const port = process.env.PORT ?? 3000;
+  const port = process.env.PORT ?? 3001;
   await app.listen(port);
   console.log(`API running on http://localhost:${port}/api`);
 }
