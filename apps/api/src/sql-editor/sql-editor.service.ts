@@ -22,11 +22,125 @@ export class SqlEditorService {
     }
   }
 
+  private static readonly BLOCKED_PATTERNS = [
+    /\bDROP\s+DATABASE\b/i,
+    /\bDROP\s+SCHEMA\b/i,
+    /\bTRUNCATE\b/i,
+  ];
+
   private parseSingleStatement(querySql: string): string {
-    const statements = querySql
-      .split(';')
-      .map((part) => part.trim())
-      .filter((part) => part.length > 0);
+    const statements: string[] = [];
+    let current = '';
+    let i = 0;
+    const len = querySql.length;
+
+    while (i < len) {
+      if (querySql[i] === '-' && querySql[i + 1] === '-') {
+        current += '--';
+        i += 2;
+        while (i < len && querySql[i] !== '\n') {
+          current += querySql[i];
+          i++;
+        }
+        continue;
+      }
+
+      if (querySql[i] === '/' && querySql[i + 1] === '*') {
+        current += '/*';
+        i += 2;
+        let depth = 1;
+        while (i < len && depth > 0) {
+          if (querySql[i] === '/' && querySql[i + 1] === '*') {
+            depth++;
+            current += '/*';
+            i += 2;
+          } else if (querySql[i] === '*' && querySql[i + 1] === '/') {
+            depth--;
+            current += '*/';
+            i += 2;
+          } else {
+            current += querySql[i];
+            i++;
+          }
+        }
+        continue;
+      }
+
+      if (querySql[i] === "'") {
+        current += "'";
+        i++;
+        while (i < len) {
+          if (querySql[i] === "'") {
+            current += "'";
+            if (querySql[i + 1] === "'") {
+              current += "'";
+              i += 2;
+            } else {
+              i++;
+              break;
+            }
+          } else {
+            current += querySql[i];
+            i++;
+          }
+        }
+        continue;
+      }
+
+      if (querySql[i] === '$') {
+        const match = querySql.slice(i).match(/^(\$[a-zA-Z0-9_]*\$)/);
+        if (match) {
+          const tag = match[1];
+          current += tag;
+          i += tag.length;
+          const endIdx = querySql.indexOf(tag, i);
+          if (endIdx !== -1) {
+            current += querySql.slice(i, endIdx + tag.length);
+            i = endIdx + tag.length;
+            continue;
+          }
+        }
+      }
+
+      if (querySql[i] === '"') {
+        current += '"';
+        i++;
+        while (i < len) {
+          if (querySql[i] === '"') {
+            current += '"';
+            if (querySql[i + 1] === '"') {
+              current += '"';
+              i += 2;
+            } else {
+              i++;
+              break;
+            }
+          } else {
+            current += querySql[i];
+            i++;
+          }
+        }
+        continue;
+      }
+
+      if (querySql[i] === ';') {
+        const trimmed = current.trim();
+        if (trimmed.length > 0) {
+          statements.push(trimmed);
+        }
+        current = '';
+        i++;
+        continue;
+      }
+
+      current += querySql[i];
+      i++;
+    }
+
+    const trimmed = current.trim();
+    if (trimmed.length > 0) {
+      statements.push(trimmed);
+    }
 
     if (statements.length === 0) {
       throw new BadRequestException('SQL query cannot be empty');
@@ -39,6 +153,107 @@ export class SqlEditorService {
     }
 
     return statements[0];
+  }
+
+  private stripCommentsAndStrings(sql: string): string {
+    let result = '';
+    let i = 0;
+    const len = sql.length;
+
+    while (i < len) {
+      if (sql[i] === '-' && sql[i + 1] === '-') {
+        i += 2;
+        while (i < len && sql[i] !== '\n') {
+          i++;
+        }
+        result += ' ';
+        continue;
+      }
+
+      if (sql[i] === '/' && sql[i + 1] === '*') {
+        i += 2;
+        let depth = 1;
+        while (i < len && depth > 0) {
+          if (sql[i] === '/' && sql[i + 1] === '*') {
+            depth++;
+            i += 2;
+          } else if (sql[i] === '*' && sql[i + 1] === '/') {
+            depth--;
+            i += 2;
+          } else {
+            i++;
+          }
+        }
+        result += ' ';
+        continue;
+      }
+
+      if (sql[i] === "'") {
+        i++;
+        while (i < len) {
+          if (sql[i] === "'") {
+            if (sql[i + 1] === "'") {
+              i += 2;
+            } else {
+              i++;
+              break;
+            }
+          } else {
+            i++;
+          }
+        }
+        result += " '' ";
+        continue;
+      }
+
+      if (sql[i] === '$') {
+        const match = sql.slice(i).match(/^(\$[a-zA-Z0-9_]*\$)/);
+        if (match) {
+          const tag = match[1];
+          i += tag.length;
+          const endIdx = sql.indexOf(tag, i);
+          if (endIdx !== -1) {
+            i = endIdx + tag.length;
+            result += " '' ";
+            continue;
+          }
+        }
+      }
+
+      if (sql[i] === '"') {
+        i++;
+        while (i < len) {
+          if (sql[i] === '"') {
+            if (sql[i + 1] === '"') {
+              i += 2;
+            } else {
+              i++;
+              break;
+            }
+          } else {
+            i++;
+          }
+        }
+        result += ' "ident" ';
+        continue;
+      }
+
+      result += sql[i];
+      i++;
+    }
+
+    return result;
+  }
+
+  assertAllowedStatement(statement: string): void {
+    const stripped = this.stripCommentsAndStrings(statement);
+    if (
+      SqlEditorService.BLOCKED_PATTERNS.some((pattern) =>
+        pattern.test(stripped),
+      )
+    ) {
+      throw new BadRequestException('This statement is not allowed');
+    }
   }
 
   private getNeonClient(): NeonQueryFunction<false, true> {
@@ -94,11 +309,7 @@ export class SqlEditorService {
     const project = await this.getProject(orgSlug, projectSlug);
     const statement = this.parseSingleStatement(querySql);
 
-    const normalised = statement.trim().toUpperCase();
-    const blocked = ['DROP DATABASE', 'DROP SCHEMA', 'TRUNCATE'];
-    if (blocked.some((b) => normalised.startsWith(b))) {
-      throw new BadRequestException('This statement is not allowed');
-    }
+    this.assertAllowedStatement(statement);
 
     this.assertSafeIdentifier(project.dbSchema, 'project schema');
 

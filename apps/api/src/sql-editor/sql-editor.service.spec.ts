@@ -1,4 +1,4 @@
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { BadRequestException } from '@nestjs/common';
 import { SqlEditorService } from './sql-editor.service';
 import { DrizzleService } from '../db/drizzle.service';
 import { assertAndReport } from '../../test/test-logger';
@@ -16,7 +16,8 @@ describe('SqlEditorService Statement & Query Validation', () => {
 
   // Positive Case 1: Valid single SQL query
   it('SQL-01 | Valid single SQL query parsing | Expected: Cleaned single statement', () => {
-    const inputSql = '   SELECT id, name FROM users WHERE status = \'active\';   ';
+    const inputSql =
+      "   SELECT id, name FROM users WHERE status = 'active';   ";
 
     const parsedStatement = (service as any).parseSingleStatement(inputSql);
 
@@ -25,11 +26,14 @@ describe('SqlEditorService Statement & Query Validation', () => {
         id: 'SQL-01',
         name: 'Single statement parsing & sanitization',
         scenario: inputSql.trim(),
-        expected: 'Parsed single SQL statement string without trailing semicolons',
+        expected:
+          'Parsed single SQL statement string without trailing semicolons',
         actual: `statement="${parsedStatement}"`,
       },
       () => {
-        expect(parsedStatement).toBe("SELECT id, name FROM users WHERE status = 'active'");
+        expect(parsedStatement).toBe(
+          "SELECT id, name FROM users WHERE status = 'active'",
+        );
       },
     );
   });
@@ -50,7 +54,8 @@ describe('SqlEditorService Statement & Query Validation', () => {
         id: 'SQL-02',
         name: 'Multi-statement injection rejection',
         scenario: multiSql,
-        expected: 'HTTP 400 BadRequestException("Only one SQL statement per run...")',
+        expected:
+          'HTTP 400 BadRequestException("Only one SQL statement per run...")',
         actual: `HTTP ${error?.status || 400} BadRequest, message="${error?.message}"`,
       },
       () => {
@@ -88,22 +93,179 @@ describe('SqlEditorService Statement & Query Validation', () => {
 
   // Negative Case 3: Blocked destructive statement (DROP DATABASE / TRUNCATE)
   it('SQL-04 | Destructive statement check (DROP DATABASE) | Expected: Rejection (400)', () => {
-    const blocked = ['DROP DATABASE', 'DROP SCHEMA', 'TRUNCATE'];
     const dangerousSql = 'DROP DATABASE orion_production';
 
-    const normalised = dangerousSql.trim().toUpperCase();
-    const isBlocked = blocked.some((b) => normalised.startsWith(b));
+    let error: any;
+    try {
+      service.assertAllowedStatement(dangerousSql);
+    } catch (err) {
+      error = err;
+    }
 
     assertAndReport(
       {
         id: 'SQL-04',
         name: 'Dangerous destructive SQL blocking',
         scenario: `statement="${dangerousSql}"`,
-        expected: 'Detected as forbidden statement (isBlocked=true)',
-        actual: `isBlocked=${isBlocked}`,
+        expected:
+          'HTTP 400 BadRequestException("This statement is not allowed")',
+        actual: `HTTP ${error?.status || 400} BadRequest, message="${error?.message}"`,
       },
       () => {
-        expect(isBlocked).toBe(true);
+        expect(error).toBeInstanceOf(BadRequestException);
+        expect(error.message).toBe('This statement is not allowed');
+      },
+    );
+  });
+
+  // Negative Case 4: Block comment bypass attempt
+  it('SQL-05 | Block comment bypass attempt (/* comment */ DROP SCHEMA) | Expected: Rejection (400)', () => {
+    const bypassSql = '/* safe comment */ DROP SCHEMA "tenant_alpha"';
+
+    let error: any;
+    try {
+      service.assertAllowedStatement(bypassSql);
+    } catch (err) {
+      error = err;
+    }
+
+    assertAndReport(
+      {
+        id: 'SQL-05',
+        name: 'Block comment bypass prevention',
+        scenario: `statement="${bypassSql}"`,
+        expected:
+          'HTTP 400 BadRequestException("This statement is not allowed")',
+        actual: `HTTP ${error?.status || 400} BadRequest, message="${error?.message}"`,
+      },
+      () => {
+        expect(error).toBeInstanceOf(BadRequestException);
+        expect(error.message).toBe('This statement is not allowed');
+      },
+    );
+  });
+
+  // Negative Case 5: Line comment bypass attempt
+  it('SQL-06 | Line comment bypass attempt (-- comment\\nDROP DATABASE) | Expected: Rejection (400)', () => {
+    const bypassSql = '-- harmless comment\nDROP DATABASE "prod_db"';
+
+    let error: any;
+    try {
+      service.assertAllowedStatement(bypassSql);
+    } catch (err) {
+      error = err;
+    }
+
+    assertAndReport(
+      {
+        id: 'SQL-06',
+        name: 'Line comment bypass prevention',
+        scenario: `statement="${bypassSql}"`,
+        expected:
+          'HTTP 400 BadRequestException("This statement is not allowed")',
+        actual: `HTTP ${error?.status || 400} BadRequest, message="${error?.message}"`,
+      },
+      () => {
+        expect(error).toBeInstanceOf(BadRequestException);
+        expect(error.message).toBe('This statement is not allowed');
+      },
+    );
+  });
+
+  // Negative Case 6: CTE TRUNCATE bypass attempt
+  it('SQL-07 | CTE TRUNCATE bypass attempt | Expected: Rejection (400)', () => {
+    const bypassSql = 'WITH cte AS (SELECT 1) TRUNCATE TABLE users';
+
+    let error: any;
+    try {
+      service.assertAllowedStatement(bypassSql);
+    } catch (err) {
+      error = err;
+    }
+
+    assertAndReport(
+      {
+        id: 'SQL-07',
+        name: 'CTE TRUNCATE bypass prevention',
+        scenario: `statement="${bypassSql}"`,
+        expected:
+          'HTTP 400 BadRequestException("This statement is not allowed")',
+        actual: `HTTP ${error?.status || 400} BadRequest, message="${error?.message}"`,
+      },
+      () => {
+        expect(error).toBeInstanceOf(BadRequestException);
+        expect(error.message).toBe('This statement is not allowed');
+      },
+    );
+  });
+
+  // Negative Case 7: Arbitrary whitespace/newlines bypass attempt
+  it('SQL-08 | Whitespace/newlines bypass attempt (DROP \\n\\t SCHEMA) | Expected: Rejection (400)', () => {
+    const bypassSql = 'DROP \n\t  SCHEMA "tenant_alpha"';
+
+    let error: any;
+    try {
+      service.assertAllowedStatement(bypassSql);
+    } catch (err) {
+      error = err;
+    }
+
+    assertAndReport(
+      {
+        id: 'SQL-08',
+        name: 'Whitespace/newlines bypass prevention',
+        scenario: 'statement="DROP \\n\\t  SCHEMA \\"tenant_alpha\\""',
+        expected:
+          'HTTP 400 BadRequestException("This statement is not allowed")',
+        actual: `HTTP ${error?.status || 400} BadRequest, message="${error?.message}"`,
+      },
+      () => {
+        expect(error).toBeInstanceOf(BadRequestException);
+        expect(error.message).toBe('This statement is not allowed');
+      },
+    );
+  });
+
+  // Positive Case 2: String literal containing blocked words is permitted
+  it('SQL-09 | String literal containing blocked keywords | Expected: Allowed (no exception)', () => {
+    const benignSql =
+      "SELECT * FROM audit_logs WHERE action = 'DROP DATABASE' OR action = 'TRUNCATE'";
+
+    expect(() => service.assertAllowedStatement(benignSql)).not.toThrow();
+
+    assertAndReport(
+      {
+        id: 'SQL-09',
+        name: 'Benign string literal with blocked keywords permitted',
+        scenario: benignSql,
+        expected: 'Statement allowed without throwing BadRequestException',
+        actual: 'No exception thrown',
+      },
+      () => {
+        expect(true).toBe(true);
+      },
+    );
+  });
+
+  // Positive Case 3: Semicolon within string literal or comment parsed as single statement
+  it('SQL-010 | Semicolon inside string literal or comment | Expected: Parsed as single statement', () => {
+    const complexSql =
+      "/* comment with ; semicolon */ SELECT 'first;second' AS pair;";
+
+    const parsed = (service as any).parseSingleStatement(complexSql);
+
+    assertAndReport(
+      {
+        id: 'SQL-10',
+        name: 'Semicolons in strings/comments preserved as single statement',
+        scenario: complexSql,
+        expected: 'Parsed as 1 statement without multi-statement error',
+        actual: `statement="${parsed}"`,
+      },
+      () => {
+        expect(parsed).toBe(
+          "/* comment with ; semicolon */ SELECT 'first;second' AS pair",
+        );
       },
     );
   });
