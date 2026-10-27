@@ -75,22 +75,38 @@ export class StorageController {
   }
 
   @Delete('buckets/:bucketId')
-  deleteBucket(@Param('bucketId') bucketId: string) {
-    return this.storageService.deleteBucket(bucketId);
+  async deleteBucket(
+    @Param('slug') slug: string,
+    @Param('projectSlug') projectSlug: string,
+    @Param('bucketId') bucketId: string,
+  ) {
+    const project = await this.storageService.getProject(slug, projectSlug);
+    return this.storageService.deleteBucket(bucketId, project.id);
   }
 
   @Get('buckets/:bucketId/objects')
-  getObjects(@Param('bucketId') bucketId: string) {
-    return this.storageService.getObjects(bucketId);
+  async getObjects(
+    @Param('slug') slug: string,
+    @Param('projectSlug') projectSlug: string,
+    @Param('bucketId') bucketId: string,
+  ) {
+    const project = await this.storageService.getProject(slug, projectSlug);
+    return this.storageService.getObjects(bucketId, project.id);
   }
 
   // UploadThing upload endpoint — proxies the UT protocol (GET + POST)
   @All('buckets/:bucketId/upload')
-  handleUpload(
+  async handleUpload(
     @Req() req: Request,
     @Res() res: Response,
     @Next() next: NextFunction,
-  ): void {
+    @Param('slug') slug: string,
+    @Param('projectSlug') projectSlug: string,
+    @Param('bucketId') bucketId: string,
+  ): Promise<void> {
+    const project = await this.storageService.getProject(slug, projectSlug);
+    await this.storageService.getBucket(project.id, bucketId);
+
     const originalUrl = req.url;
     const queryIndex = originalUrl.indexOf('?');
     const query = queryIndex >= 0 ? originalUrl.slice(queryIndex) : '';
@@ -102,17 +118,33 @@ export class StorageController {
   }
 
   @Post('buckets/:bucketId/objects')
-  saveObject(@Param('bucketId') bucketId: string, @Body() file: SaveObjectDto) {
-    return this.storageService.saveObject(bucketId, file);
+  async saveObject(
+    @Param('slug') slug: string,
+    @Param('projectSlug') projectSlug: string,
+    @Param('bucketId') bucketId: string,
+    @Body() file: SaveObjectDto,
+  ) {
+    const project = await this.storageService.getProject(slug, projectSlug);
+    return this.storageService.saveObject(bucketId, file, project.id);
   }
 
   @Delete('objects/:objectId')
-  deleteObject(@Param('objectId') objectId: string) {
-    return this.storageService.deleteObject(objectId);
+  async deleteObject(
+    @Param('slug') slug: string,
+    @Param('projectSlug') projectSlug: string,
+    @Param('objectId') objectId: string,
+  ) {
+    const project = await this.storageService.getProject(slug, projectSlug);
+    return this.storageService.deleteObject(objectId, project.id);
   }
 
   @Get('objects/:objectId/signed-url')
-  getSignedUrl(@Param('objectId') objectId: string) {
-    return this.storageService.getSignedUrl(objectId);
+  async getSignedUrl(
+    @Param('slug') slug: string,
+    @Param('projectSlug') projectSlug: string,
+    @Param('objectId') objectId: string,
+  ) {
+    const project = await this.storageService.getProject(slug, projectSlug);
+    return this.storageService.getSignedUrl(objectId, project.id);
   }
 }

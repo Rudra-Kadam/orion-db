@@ -133,4 +133,76 @@ describe('StorageService', () => {
       },
     );
   });
+
+  // STOR-04: BOLA: delete bucket in foreign project rejection
+  it('STOR-04 | Delete bucket in foreign project | Expected: NotFoundException', async () => {
+    const bucketId = 'bucket_foreign';
+    const projectId = 'proj_own';
+
+    drizzle.db.select.mockReturnValueOnce({
+      from: jest.fn().mockReturnValueOnce({
+        where: jest.fn().mockReturnValueOnce({
+          limit: jest.fn().mockResolvedValueOnce([]),
+        }),
+      }),
+    });
+
+    let error: any;
+    try {
+      await service.deleteBucket(bucketId, projectId);
+    } catch (err) {
+      error = err;
+    }
+
+    assertAndReport(
+      {
+        id: 'STOR-04',
+        name: 'Delete bucket cross-project BOLA rejection',
+        scenario: 'bucketId="bucket_foreign", projectId="proj_own"',
+        expected: 'HTTP 404 NotFoundException("Bucket not found")',
+        actual: `HTTP ${error?.status || 404} NotFound, message="${error?.message}"`,
+      },
+      () => {
+        expect(error).toBeInstanceOf(NotFoundException);
+        expect(error.message).toBe('Bucket not found');
+      },
+    );
+  });
+
+  // STOR-05: BOLA: delete object in foreign project rejection
+  it('STOR-05 | Delete object in foreign project | Expected: NotFoundException', async () => {
+    const objectId = 'obj_foreign';
+    const projectId = 'proj_own';
+
+    drizzle.db.select.mockReturnValueOnce({
+      from: jest.fn().mockReturnValueOnce({
+        innerJoin: jest.fn().mockReturnValueOnce({
+          where: jest.fn().mockReturnValueOnce({
+            limit: jest.fn().mockResolvedValueOnce([]),
+          }),
+        }),
+      }),
+    });
+
+    let error: any;
+    try {
+      await service.deleteObject(objectId, projectId);
+    } catch (err) {
+      error = err;
+    }
+
+    assertAndReport(
+      {
+        id: 'STOR-05',
+        name: 'Delete object cross-project BOLA rejection',
+        scenario: 'objectId="obj_foreign", projectId="proj_own"',
+        expected: 'HTTP 404 NotFoundException("File not found")',
+        actual: `HTTP ${error?.status || 404} NotFound, message="${error?.message}"`,
+      },
+      () => {
+        expect(error).toBeInstanceOf(NotFoundException);
+        expect(error.message).toBe('File not found');
+      },
+    );
+  });
 });

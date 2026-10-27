@@ -72,7 +72,7 @@ export class ProjectStorageController {
       projectId,
       bucketName,
     );
-    return this.storageService.getObjects(bucket.id);
+    return this.storageService.getObjects(bucket.id, projectId);
   }
 
   @All('buckets/:bucketName/upload')
@@ -112,7 +112,7 @@ export class ProjectStorageController {
       projectId,
       bucketName,
     );
-    return this.storageService.saveObject(bucket.id, file);
+    return this.storageService.saveObject(bucket.id, file, projectId);
   }
 
   @Delete('objects/:objectId')
@@ -124,7 +124,7 @@ export class ProjectStorageController {
     this.assertWriteAccess(req);
     const { projectId } = this.getProjectKey(req);
     await this.storageService.assertProjectSlug(projectId, projectSlug);
-    return this.storageService.deleteObject(objectId);
+    return this.storageService.deleteObject(objectId, projectId);
   }
 
   @Get('objects/:objectId/signed-url')
@@ -135,6 +135,6 @@ export class ProjectStorageController {
   ) {
     const { projectId } = this.getProjectKey(req);
     await this.storageService.assertProjectSlug(projectId, projectSlug);
-    return this.storageService.getSignedUrl(objectId);
+    return this.storageService.getSignedUrl(objectId, projectId);
   }
 }

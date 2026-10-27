@@ -21,7 +21,7 @@ export class StorageService {
 
   constructor(private drizzle: DrizzleService) {}
 
-  private async getProject(orgSlug: string, projectSlug: string) {
+  async getProject(orgSlug: string, projectSlug: string) {
     const [row] = await this.drizzle.db
       .select({ id: projects.id })
       .from(projects)
@@ -32,6 +32,48 @@ export class StorageService {
       .limit(1);
 
     if (!row) throw new NotFoundException('Project not found');
+    return row;
+  }
+
+  async getBucket(projectId: string, bucketId: string) {
+    const [bucket] = await this.drizzle.db
+      .select()
+      .from(storageBuckets)
+      .where(
+        and(
+          eq(storageBuckets.id, bucketId),
+          eq(storageBuckets.projectId, projectId),
+        ),
+      )
+      .limit(1);
+
+    if (!bucket) throw new NotFoundException('Bucket not found');
+    return bucket;
+  }
+
+  async getObject(projectId: string, objectId: string) {
+    const [row] = await this.drizzle.db
+      .select({
+        id: storageObjects.id,
+        bucketId: storageObjects.bucketId,
+        name: storageObjects.name,
+        size: storageObjects.size,
+        mimeType: storageObjects.mimeType,
+        utKey: storageObjects.utKey,
+        url: storageObjects.url,
+        createdAt: storageObjects.createdAt,
+      })
+      .from(storageObjects)
+      .innerJoin(storageBuckets, eq(storageObjects.bucketId, storageBuckets.id))
+      .where(
+        and(
+          eq(storageObjects.id, objectId),
+          eq(storageBuckets.projectId, projectId),
+        ),
+      )
+      .limit(1);
+
+    if (!row) throw new NotFoundException('File not found');
     return row;
   }
 
@@ -64,7 +106,11 @@ export class StorageService {
     return bucket;
   }
 
-  async deleteBucket(bucketId: string) {
+  async deleteBucket(bucketId: string, projectId?: string) {
+    if (projectId) {
+      await this.getBucket(projectId, bucketId);
+    }
+
     const objects = await this.drizzle.db
       .select({ utKey: storageObjects.utKey })
       .from(storageObjects)
@@ -76,12 +122,23 @@ export class StorageService {
 
     await this.drizzle.db
       .delete(storageBuckets)
-      .where(eq(storageBuckets.id, bucketId));
+      .where(
+        projectId
+          ? and(
+              eq(storageBuckets.id, bucketId),
+              eq(storageBuckets.projectId, projectId),
+            )
+          : eq(storageBuckets.id, bucketId),
+      );
 
     return { message: 'Bucket deleted' };
   }
 
-  async getObjects(bucketId: string) {
+  async getObjects(bucketId: string, projectId?: string) {
+    if (projectId) {
+      await this.getBucket(projectId, bucketId);
+    }
+
     return this.drizzle.db
       .select()
       .from(storageObjects)
@@ -97,14 +154,21 @@ export class StorageService {
       utKey: string;
       url: string;
     },
+    projectId?: string,
   ) {
-    const [bucket] = await this.drizzle.db
-      .select()
-      .from(storageBuckets)
-      .where(eq(storageBuckets.id, bucketId))
-      .limit(1);
+    let bucket;
+    if (projectId) {
+      bucket = await this.getBucket(projectId, bucketId);
+    } else {
+      const [found] = await this.drizzle.db
+        .select()
+        .from(storageBuckets)
+        .where(eq(storageBuckets.id, bucketId))
+        .limit(1);
 
-    if (!bucket) throw new NotFoundException('Bucket not found');
+      if (!found) throw new NotFoundException('Bucket not found');
+      bucket = found;
+    }
 
     const url = bucket.access === 'public' ? file.url : '';
 
@@ -123,14 +187,20 @@ export class StorageService {
     return object;
   }
 
-  async deleteObject(objectId: string) {
-    const [object] = await this.drizzle.db
-      .select()
-      .from(storageObjects)
-      .where(eq(storageObjects.id, objectId))
-      .limit(1);
+  async deleteObject(objectId: string, projectId?: string) {
+    let object;
+    if (projectId) {
+      object = await this.getObject(projectId, objectId);
+    } else {
+      const [found] = await this.drizzle.db
+        .select()
+        .from(storageObjects)
+        .where(eq(storageObjects.id, objectId))
+        .limit(1);
 
-    if (!object) throw new NotFoundException('File not found');
+      if (!found) throw new NotFoundException('File not found');
+      object = found;
+    }
 
     await this.utapi.deleteFiles(object.utKey);
 
@@ -141,14 +211,20 @@ export class StorageService {
     return { message: 'File deleted' };
   }
 
-  async getSignedUrl(objectId: string) {
-    const [object] = await this.drizzle.db
-      .select()
-      .from(storageObjects)
-      .where(eq(storageObjects.id, objectId))
-      .limit(1);
+  async getSignedUrl(objectId: string, projectId?: string) {
+    let object;
+    if (projectId) {
+      object = await this.getObject(projectId, objectId);
+    } else {
+      const [found] = await this.drizzle.db
+        .select()
+        .from(storageObjects)
+        .where(eq(storageObjects.id, objectId))
+        .limit(1);
 
-    if (!object) throw new NotFoundException('File not found');
+      if (!found) throw new NotFoundException('File not found');
+      object = found;
+    }
 
     const { ufsUrl } = await this.utapi.generateSignedURL(object.utKey, {
       expiresIn: 3600,
