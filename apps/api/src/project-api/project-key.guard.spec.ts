@@ -116,7 +116,8 @@ describe('ProjectKeyGuard', () => {
         id: 'APIKEY-03',
         name: 'Valid Project API key accepted',
         scenario: 'authorization="Bearer valid.jwt.project.key" (role=anon)',
-        expected: 'Returns true, attaches projectKey payload to request["projectKey"]',
+        expected:
+          'Returns true, attaches projectKey payload to request["projectKey"]',
         actual: `canActivate=${result}, role=${request.projectKey?.role}, projectId=${request.projectKey?.projectId}`,
       },
       () => {

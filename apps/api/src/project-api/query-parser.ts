@@ -4,6 +4,7 @@ import {
   FILTER_OPERATORS,
   type FilterOperator,
 } from '@orion/constants';
+import { sql, SQL } from 'drizzle-orm';
 
 export interface ParsedQuery {
   select: string[];
@@ -28,28 +29,6 @@ function assertSafeIdentifier(name: string, label: string): void {
   if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(name)) {
     throw new BadRequestException(`Invalid ${label}: ${name}`);
   }
-}
-
-function formatSqlValue(operator: string, rawValue: string): string {
-  const value = rawValue.replace(/;/g, '');
-
-  if (operator === 'IS') {
-    return value.toUpperCase() === 'NULL' ? 'NULL' : 'NOT NULL';
-  }
-
-  if (operator === 'LIKE' || operator === 'ILIKE') {
-    return `'${value.replace(/'/g, "''")}'`;
-  }
-
-  if (value.toLowerCase() === 'true' || value.toLowerCase() === 'false') {
-    return value.toLowerCase();
-  }
-
-  if (/^-?\d+(\.\d+)?$/.test(value)) {
-    return value;
-  }
-
-  return `'${value.replace(/'/g, "''")}'`;
 }
 
 export function parseQueryParams(params: Record<string, string>): ParsedQuery {
@@ -108,22 +87,27 @@ export function parseQueryParams(params: Record<string, string>): ParsedQuery {
   return { select, filters, orderBy, limit, offset };
 }
 
-export function buildWhereClause(filters: FilterClause[]): string {
-  if (filters.length === 0) return '';
+export function buildWhereClause(filters: FilterClause[]): SQL | undefined {
+  if (filters.length === 0) return undefined;
 
   const clauses = filters.map(({ column, operator, value }) => {
-    const sqlValue = formatSqlValue(operator, value);
-
     if (operator === 'IS') {
-      return `"${column}" IS ${sqlValue}`;
+      return value.toUpperCase() === 'NULL'
+        ? sql`${sql.identifier(column)} IS NULL`
+        : sql`${sql.identifier(column)} IS NOT NULL`;
     }
 
-    if (operator === 'LIKE' || operator === 'ILIKE') {
-      return `"${column}" ${operator} ${sqlValue}`;
+    let parsedVal: unknown = value;
+    if (value.toLowerCase() === 'true') {
+      parsedVal = true;
+    } else if (value.toLowerCase() === 'false') {
+      parsedVal = false;
+    } else if (/^-?\d+(\.\d+)?$/.test(value)) {
+      parsedVal = Number(value);
     }
 
-    return `"${column}" ${operator} ${sqlValue}`;
+    return sql`${sql.identifier(column)} ${sql.raw(operator)} ${parsedVal}`;
   });
 
-  return `WHERE ${clauses.join(' AND ')}`;
+  return sql.join(clauses, sql` AND `);
 }

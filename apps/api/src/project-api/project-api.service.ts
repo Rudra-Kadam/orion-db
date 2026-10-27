@@ -4,7 +4,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { DrizzleService } from '../db/drizzle.service';
 import { projects } from '../db/schema';
 import { parseQueryParams, buildWhereClause } from './query-parser';
@@ -17,21 +17,6 @@ export class ProjectApiService {
     if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(name)) {
       throw new BadRequestException(`Invalid ${label}: ${name}`);
     }
-  }
-
-  private formatLiteral(value: unknown): string {
-    if (value === null || value === undefined) return 'NULL';
-    if (typeof value === 'boolean') return value ? 'TRUE' : 'FALSE';
-    if (typeof value === 'number' && Number.isFinite(value)) {
-      return String(value);
-    }
-    if (typeof value === 'string') {
-      return `'${value.replace(/'/g, "''")}'`;
-    }
-    if (typeof value === 'object') {
-      return `'${JSON.stringify(value).replace(/'/g, "''")}'::jsonb`;
-    }
-    throw new BadRequestException('Unsupported column value');
   }
 
   async resolveProjectSchema(
@@ -57,18 +42,18 @@ export class ProjectApiService {
     schema: string,
     tableName: string,
   ): Promise<string> {
-    const result = await this.drizzle.db.execute<{ column_name: string }>(
-      `SELECT kcu.column_name
-       FROM information_schema.table_constraints tc
-       JOIN information_schema.key_column_usage kcu
-         ON tc.constraint_name = kcu.constraint_name
-         AND tc.table_schema = kcu.table_schema
-       WHERE tc.constraint_type = 'PRIMARY KEY'
-         AND tc.table_schema = '${schema}'
-         AND tc.table_name = '${tableName}'
-       ORDER BY kcu.ordinal_position ASC
-       LIMIT 1`,
-    );
+    const result = await this.drizzle.db.execute<{ column_name: string }>(sql`
+      SELECT kcu.column_name
+      FROM information_schema.table_constraints tc
+      JOIN information_schema.key_column_usage kcu
+        ON tc.constraint_name = kcu.constraint_name
+        AND tc.table_schema = kcu.table_schema
+      WHERE tc.constraint_type = 'PRIMARY KEY'
+        AND tc.table_schema = ${schema}
+        AND tc.table_name = ${tableName}
+      ORDER BY kcu.ordinal_position ASC
+      LIMIT 1
+    `);
 
     const pk = result.rows[0]?.column_name;
     if (!pk) {
@@ -89,24 +74,30 @@ export class ProjectApiService {
     const { select, filters, orderBy, limit, offset } =
       parseQueryParams(rawParams);
 
-    const columns =
-      select.length > 0 ? select.map((c) => `"${c}"`).join(', ') : '*';
+    const columnsSql =
+      select.length > 0
+        ? sql.join(
+            select.map((c) => sql.identifier(c)),
+            sql`, `,
+          )
+        : sql`*`;
 
-    const where = buildWhereClause(filters);
-    const order = orderBy
-      ? `ORDER BY "${orderBy.column}" ${orderBy.direction}`
-      : '';
+    const whereSql = buildWhereClause(filters);
+    const orderSql = orderBy
+      ? sql` ORDER BY ${sql.identifier(orderBy.column)} ${sql.raw(orderBy.direction)}`
+      : sql.empty();
 
-    const sql = `
-      SELECT ${columns}
-      FROM "${schema}"."${tableName}"
-      ${where}
-      ${order}
+    const query = sql`
+      SELECT ${columnsSql}
+      FROM ${sql.identifier(schema)}.${sql.identifier(tableName)}
+      ${whereSql ? sql` WHERE ${whereSql}` : sql.empty()}
+      ${orderSql}
       LIMIT ${limit}
       OFFSET ${offset}
     `;
 
-    const result = await this.drizzle.db.execute<Record<string, unknown>>(sql);
+    const result =
+      await this.drizzle.db.execute<Record<string, unknown>>(query);
     return result.rows;
   }
 
@@ -126,16 +117,28 @@ export class ProjectApiService {
 
     entries.forEach(([col]) => this.assertSafeIdentifier(col, 'column name'));
 
-    const columns = entries.map(([c]) => `"${c}"`).join(', ');
-    const values = entries.map(([, v]) => this.formatLiteral(v)).join(', ');
+    const columnsSql = sql.join(
+      entries.map(([c]) => sql.identifier(c)),
+      sql`, `,
+    );
+    const valuesSql = sql.join(
+      entries.map(([, v]) => {
+        if (v !== null && typeof v === 'object') {
+          return sql`${JSON.stringify(v)}::jsonb`;
+        }
+        return sql`${v}`;
+      }),
+      sql`, `,
+    );
 
-    const sql = `
-      INSERT INTO "${schema}"."${tableName}" (${columns})
-      VALUES (${values})
+    const query = sql`
+      INSERT INTO ${sql.identifier(schema)}.${sql.identifier(tableName)} (${columnsSql})
+      VALUES (${valuesSql})
       RETURNING *
     `;
 
-    const result = await this.drizzle.db.execute<Record<string, unknown>>(sql);
+    const result =
+      await this.drizzle.db.execute<Record<string, unknown>>(query);
     return result.rows[0];
   }
 
@@ -157,18 +160,25 @@ export class ProjectApiService {
 
     entries.forEach(([col]) => this.assertSafeIdentifier(col, 'column name'));
 
-    const setClauses = entries
-      .map(([col, val]) => `"${col}" = ${this.formatLiteral(val)}`)
-      .join(', ');
+    const setClausesSql = sql.join(
+      entries.map(([col, val]) => {
+        if (val !== null && typeof val === 'object') {
+          return sql`${sql.identifier(col)} = ${JSON.stringify(val)}::jsonb`;
+        }
+        return sql`${sql.identifier(col)} = ${val}`;
+      }),
+      sql`, `,
+    );
 
-    const sql = `
-      UPDATE "${schema}"."${tableName}"
-      SET ${setClauses}
-      WHERE "${pkColumn}" = ${this.formatLiteral(rowId)}
+    const query = sql`
+      UPDATE ${sql.identifier(schema)}.${sql.identifier(tableName)}
+      SET ${setClausesSql}
+      WHERE ${sql.identifier(pkColumn)} = ${rowId}
       RETURNING *
     `;
 
-    const result = await this.drizzle.db.execute<Record<string, unknown>>(sql);
+    const result =
+      await this.drizzle.db.execute<Record<string, unknown>>(query);
     if (!result.rows[0]) throw new NotFoundException('Row not found');
     return result.rows[0];
   }
@@ -183,13 +193,14 @@ export class ProjectApiService {
     const schema = await this.resolveProjectSchema(projectId, projectSlug);
     const pkColumn = await this.getPrimaryKeyColumn(schema, tableName);
 
-    const sql = `
-      DELETE FROM "${schema}"."${tableName}"
-      WHERE "${pkColumn}" = ${this.formatLiteral(rowId)}
+    const query = sql`
+      DELETE FROM ${sql.identifier(schema)}.${sql.identifier(tableName)}
+      WHERE ${sql.identifier(pkColumn)} = ${rowId}
       RETURNING *
     `;
 
-    const result = await this.drizzle.db.execute<Record<string, unknown>>(sql);
+    const result =
+      await this.drizzle.db.execute<Record<string, unknown>>(query);
     if (!result.rows[0]) throw new NotFoundException('Row not found');
     return result.rows[0];
   }
