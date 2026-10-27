@@ -22,12 +22,25 @@ describe('MembersService', () => {
     const orgSlug = 'acme-corp';
     const memberId = 'mem_admin_1';
 
-    // Mock query in ensureNotLastAdmin: returns only 1 admin
+    // Mock getMemberInOrg: target is admin
     drizzle.db.select.mockReturnValueOnce({
       from: jest.fn().mockReturnValueOnce({
         innerJoin: jest.fn().mockReturnValueOnce({
-          where: jest.fn().mockResolvedValueOnce([{ id: memberId }]),
+          where: jest.fn().mockReturnValueOnce({
+            limit: jest
+              .fn()
+              .mockResolvedValueOnce([
+                { id: memberId, role: 'admin', orgId: 'org_123' },
+              ]),
+          }),
         }),
+      }),
+    });
+
+    // Mock ensureNotLastAdmin: returns only 1 admin
+    drizzle.db.select.mockReturnValueOnce({
+      from: jest.fn().mockReturnValueOnce({
+        where: jest.fn().mockResolvedValueOnce([{ id: memberId }]),
       }),
     });
 
@@ -42,13 +55,17 @@ describe('MembersService', () => {
       {
         id: 'MEM-01',
         name: 'Demote last admin rejection',
-        scenario: 'org="acme-corp", memberId="mem_admin_1", newRole="developer"',
-        expected: 'HTTP 400 BadRequestException("Cannot remove or demote the last admin of an organization")',
+        scenario:
+          'org="acme-corp", memberId="mem_admin_1", newRole="developer"',
+        expected:
+          'HTTP 400 BadRequestException("Cannot remove or demote the last admin of an organization")',
         actual: `HTTP ${error?.status || 400} BadRequest, message="${error?.message}"`,
       },
       () => {
         expect(error).toBeInstanceOf(BadRequestException);
-        expect(error.message).toBe('Cannot remove or demote the last admin of an organization');
+        expect(error.message).toBe(
+          'Cannot remove or demote the last admin of an organization',
+        );
       },
     );
   });
@@ -58,12 +75,25 @@ describe('MembersService', () => {
     const orgSlug = 'acme-corp';
     const memberId = 'mem_admin_1';
 
-    // Mock query in ensureNotLastAdmin: returns only 1 admin
+    // Mock getMemberInOrg: target is admin
     drizzle.db.select.mockReturnValueOnce({
       from: jest.fn().mockReturnValueOnce({
         innerJoin: jest.fn().mockReturnValueOnce({
-          where: jest.fn().mockResolvedValueOnce([{ id: memberId }]),
+          where: jest.fn().mockReturnValueOnce({
+            limit: jest
+              .fn()
+              .mockResolvedValueOnce([
+                { id: memberId, role: 'admin', orgId: 'org_123' },
+              ]),
+          }),
         }),
+      }),
+    });
+
+    // Mock ensureNotLastAdmin: returns only 1 admin
+    drizzle.db.select.mockReturnValueOnce({
+      from: jest.fn().mockReturnValueOnce({
+        where: jest.fn().mockResolvedValueOnce([{ id: memberId }]),
       }),
     });
 
@@ -79,12 +109,15 @@ describe('MembersService', () => {
         id: 'MEM-02',
         name: 'Remove last admin rejection',
         scenario: 'org="acme-corp", memberId="mem_admin_1"',
-        expected: 'HTTP 400 BadRequestException("Cannot remove or demote the last admin of an organization")',
+        expected:
+          'HTTP 400 BadRequestException("Cannot remove or demote the last admin of an organization")',
         actual: `HTTP ${error?.status || 400} BadRequest, message="${error?.message}"`,
       },
       () => {
         expect(error).toBeInstanceOf(BadRequestException);
-        expect(error.message).toBe('Cannot remove or demote the last admin of an organization');
+        expect(error.message).toBe(
+          'Cannot remove or demote the last admin of an organization',
+        );
       },
     );
   });
@@ -94,15 +127,27 @@ describe('MembersService', () => {
     const orgSlug = 'acme-corp';
     const memberId = 'mem_admin_1';
 
-    // Mock ensureNotLastAdmin: 2 admins exist
+    // Mock getMemberInOrg: target is admin
     drizzle.db.select.mockReturnValueOnce({
       from: jest.fn().mockReturnValueOnce({
         innerJoin: jest.fn().mockReturnValueOnce({
-          where: jest.fn().mockResolvedValueOnce([
-            { id: memberId },
-            { id: 'mem_admin_2' },
-          ]),
+          where: jest.fn().mockReturnValueOnce({
+            limit: jest
+              .fn()
+              .mockResolvedValueOnce([
+                { id: memberId, role: 'admin', orgId: 'org_123' },
+              ]),
+          }),
         }),
+      }),
+    });
+
+    // Mock ensureNotLastAdmin: 2 admins exist
+    drizzle.db.select.mockReturnValueOnce({
+      from: jest.fn().mockReturnValueOnce({
+        where: jest
+          .fn()
+          .mockResolvedValueOnce([{ id: memberId }, { id: 'mem_admin_2' }]),
       }),
     });
 
@@ -116,7 +161,9 @@ describe('MembersService', () => {
       }),
     });
 
-    const result = await service.updateRole(orgSlug, memberId, { role: 'developer' });
+    const result = await service.updateRole(orgSlug, memberId, {
+      role: 'developer',
+    });
 
     assertAndReport(
       {
@@ -137,11 +184,13 @@ describe('MembersService', () => {
     const orgSlug = 'acme-corp';
     const memberId = 'non_existent_mem';
 
-    // Updating to admin does not call ensureNotLastAdmin
-    drizzle.db.update.mockReturnValueOnce({
-      set: jest.fn().mockReturnValueOnce({
-        where: jest.fn().mockReturnValueOnce({
-          returning: jest.fn().mockResolvedValueOnce([]),
+    // Mock getMemberInOrg: returns empty
+    drizzle.db.select.mockReturnValueOnce({
+      from: jest.fn().mockReturnValueOnce({
+        innerJoin: jest.fn().mockReturnValueOnce({
+          where: jest.fn().mockReturnValueOnce({
+            limit: jest.fn().mockResolvedValueOnce([]),
+          }),
         }),
       }),
     });
@@ -173,11 +222,17 @@ describe('MembersService', () => {
     const orgSlug = 'acme-corp';
     const memberId = 'mem_dev_1';
 
-    // ensureNotLastAdmin: target is not admin
+    // Mock getMemberInOrg: developer member
     drizzle.db.select.mockReturnValueOnce({
       from: jest.fn().mockReturnValueOnce({
         innerJoin: jest.fn().mockReturnValueOnce({
-          where: jest.fn().mockResolvedValueOnce([{ id: 'mem_admin_1' }]),
+          where: jest.fn().mockReturnValueOnce({
+            limit: jest
+              .fn()
+              .mockResolvedValueOnce([
+                { id: memberId, role: 'developer', orgId: 'org_123' },
+              ]),
+          }),
         }),
       }),
     });
@@ -202,6 +257,84 @@ describe('MembersService', () => {
       },
       () => {
         expect(result).toEqual({ message: 'Member removed' });
+      },
+    );
+  });
+
+  // MEM-06: BOLA/IDOR: Update role for member in different organization
+  it('MEM-06 | Cross-org IDOR: Update role for member in different org | Expected: NotFoundException', async () => {
+    const orgSlug = 'org-a';
+    const memberIdFromOrgB = 'mem_from_org_b';
+
+    // Mock getMemberInOrg: lookup scoped to orgSlug returns empty
+    drizzle.db.select.mockReturnValueOnce({
+      from: jest.fn().mockReturnValueOnce({
+        innerJoin: jest.fn().mockReturnValueOnce({
+          where: jest.fn().mockReturnValueOnce({
+            limit: jest.fn().mockResolvedValueOnce([]),
+          }),
+        }),
+      }),
+    });
+
+    let error: any;
+    try {
+      await service.updateRole(orgSlug, memberIdFromOrgB, {
+        role: 'developer',
+      });
+    } catch (err) {
+      error = err;
+    }
+
+    assertAndReport(
+      {
+        id: 'MEM-06',
+        name: 'Cross-organization member role update rejection',
+        scenario: 'orgSlug="org-a", memberId="mem_from_org_b"',
+        expected: 'HTTP 404 NotFoundException("Member not found")',
+        actual: `HTTP ${error?.status || 404} NotFound, message="${error?.message}"`,
+      },
+      () => {
+        expect(error).toBeInstanceOf(NotFoundException);
+        expect(error.message).toBe('Member not found');
+      },
+    );
+  });
+
+  // MEM-07: BOLA/IDOR: Remove member in different organization
+  it('MEM-07 | Cross-org IDOR: Remove member in different org | Expected: NotFoundException', async () => {
+    const orgSlug = 'org-a';
+    const memberIdFromOrgB = 'mem_from_org_b';
+
+    // Mock getMemberInOrg: lookup scoped to orgSlug returns empty
+    drizzle.db.select.mockReturnValueOnce({
+      from: jest.fn().mockReturnValueOnce({
+        innerJoin: jest.fn().mockReturnValueOnce({
+          where: jest.fn().mockReturnValueOnce({
+            limit: jest.fn().mockResolvedValueOnce([]),
+          }),
+        }),
+      }),
+    });
+
+    let error: any;
+    try {
+      await service.removeMember(orgSlug, memberIdFromOrgB);
+    } catch (err) {
+      error = err;
+    }
+
+    assertAndReport(
+      {
+        id: 'MEM-07',
+        name: 'Cross-organization member removal rejection',
+        scenario: 'orgSlug="org-a", memberId="mem_from_org_b"',
+        expected: 'HTTP 404 NotFoundException("Member not found")',
+        actual: `HTTP ${error?.status || 404} NotFound, message="${error?.message}"`,
+      },
+      () => {
+        expect(error).toBeInstanceOf(NotFoundException);
+        expect(error.message).toBe('Member not found');
       },
     );
   });

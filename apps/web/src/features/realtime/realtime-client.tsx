@@ -188,7 +188,7 @@ export function RealtimeClient({
                         void toggleTable(table, checked)
                       }
                       disabled={!connected}
-                      className="h-6 w-11 shrink-0 border border-border shadow-sm data-[state=checked]:bg-primary data-[state=unchecked]:bg-neutral-300 data-[state=unchecked]:dark:bg-neutral-600 [&_[data-slot=switch-thumb]]:size-5 [&_[data-slot=switch-thumb]]:bg-white [&_[data-slot=switch-thumb]]:shadow"
+                      className="h-6 w-11 shrink-0 border border-border shadow-sm data-[state=checked]:bg-primary data-[state=unchecked]:bg-neutral-300 data-[state=unchecked]:dark:bg-neutral-600 **:data-[slot=switch-thumb]:size-5 **:data-[slot=switch-thumb]:bg-white **:data-[slot=switch-thumb]:shadow"
                     />
                   </div>
                 </div>
@@ -254,7 +254,7 @@ export function RealtimeClient({
               </p>
             </div>
           ) : (
-            <ScrollArea className="h-[500px] rounded-xl border border-border">
+            <ScrollArea className="h-125 rounded-xl border border-border">
               <div className="divide-y divide-border">
                 {events.map((event) => (
                   <div key={event.id} className="space-y-2 px-4 py-3">
