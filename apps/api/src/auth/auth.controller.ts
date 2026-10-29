@@ -107,7 +107,14 @@ export class AuthController {
 
   @Get('invite/accept')
   async acceptInvite(@Query('token') token: string, @Res() res: Response) {
-    await this.inviteService.acceptInvite(token);
+    const result = await this.inviteService.acceptInvite(token);
+    if (result.user) {
+      const tokens = this.authService.signTokens(
+        result.user.id,
+        result.user.email,
+      );
+      this.authService.setTokenCookies(res, tokens);
+    }
     return res.redirect(`${this.configService.get('WEB_URL')}/dashboard`);
   }
 }

@@ -3,7 +3,6 @@ import {
   BadRequestException,
   ConflictException,
   UnauthorizedException,
-  ValidationPipe,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import type { Response } from 'express';
@@ -30,6 +29,7 @@ describe('AuthController & Authentication Workflow', () => {
     mockResponse = {
       cookie: jest.fn(),
       clearCookie: jest.fn(),
+      redirect: jest.fn(),
     };
 
     authService = {
@@ -38,6 +38,7 @@ describe('AuthController & Authentication Workflow', () => {
       setTokenCookies: jest.fn(),
       clearTokenCookies: jest.fn(),
       refreshTokens: jest.fn(),
+      signTokens: jest.fn(),
     };
 
     configService = {
@@ -285,7 +286,8 @@ describe('AuthController & Authentication Workflow', () => {
         id: 'AUTH-08',
         name: 'Register password min length check',
         scenario: `password="${rawInput.password}" (length 5)`,
-        expected: 'Validation error: password must be longer than or equal to 8 characters',
+        expected:
+          'Validation error: password must be longer than or equal to 8 characters',
         actual: `Validation constraint failed: ${passwordError?.constraints?.minLength}`,
       },
       () => {
@@ -319,12 +321,122 @@ describe('AuthController & Authentication Workflow', () => {
         id: 'AUTH-09',
         name: 'Duplicate email registration rejection',
         scenario: `email=${input.email} already exists in DB`,
-        expected: 'HTTP 409 ConflictException with message "Email already in use"',
+        expected:
+          'HTTP 409 ConflictException with message "Email already in use"',
         actual: `HTTP ${error?.status || 409} Conflict, message="${error?.message}"`,
       },
       () => {
         expect(error).toBeInstanceOf(ConflictException);
         expect(error.message).toBe('Email already in use');
+      },
+    );
+  });
+
+  // Positive Case 7: Invitation Acceptance
+  it('AUTH-10 | Valid invitation acceptance | Expected: Signs tokens, sets cookies, and redirects to dashboard', async () => {
+    const inviteToken = 'valid.invite.token';
+    const mockUser = {
+      id: 'usr_invited_123',
+      email: 'collab@orion.dev',
+    };
+    const mockTokens = {
+      accessToken: 'access.jwt.collab',
+      refreshToken: 'refresh.jwt.collab',
+    };
+
+    (inviteService.acceptInvite as jest.Mock).mockResolvedValueOnce({
+      message: 'Invite accepted',
+      email: mockUser.email,
+      user: mockUser,
+    });
+    (authService.signTokens as jest.Mock).mockReturnValueOnce(mockTokens);
+
+    await controller.acceptInvite(inviteToken, mockResponse as Response);
+
+    assertAndReport(
+      {
+        id: 'AUTH-10',
+        name: 'Invitation acceptance sets session cookies before dashboard redirect',
+        scenario: `token=${inviteToken}, user=${mockUser.email}`,
+        expected:
+          'Signs tokens, sets session cookies, and redirects to http://localhost:3000/dashboard',
+        actual:
+          'signTokens called with user.id, setTokenCookies invoked, redirected to dashboard',
+      },
+      () => {
+        expect(inviteService.acceptInvite).toHaveBeenCalledWith(inviteToken);
+        expect(authService.signTokens).toHaveBeenCalledWith(
+          mockUser.id,
+          mockUser.email,
+        );
+        expect(authService.setTokenCookies).toHaveBeenCalledWith(
+          mockResponse,
+          mockTokens,
+        );
+        expect(mockResponse.redirect).toHaveBeenCalledWith(
+          'http://localhost:3000/dashboard',
+        );
+      },
+    );
+  });
+
+  // Case 8: Replay Prevention - Existing member clicking consumed invite does not issue new tokens
+  it('AUTH-11 | Existing member clicking consumed invite | Expected: No new tokens issued and redirects to dashboard', async () => {
+    const inviteToken = 'consumed.invite.token';
+
+    (inviteService.acceptInvite as jest.Mock).mockResolvedValueOnce({
+      message: 'Already a member',
+    });
+
+    await controller.acceptInvite(inviteToken, mockResponse as Response);
+
+    assertAndReport(
+      {
+        id: 'AUTH-11',
+        name: 'Replay prevention: consumed invite does not issue session cookies',
+        scenario: `token=${inviteToken}, already a member`,
+        expected: 'No session cookies issued, redirect to dashboard',
+        actual:
+          'authService.signTokens and setTokenCookies not called, redirected to dashboard',
+      },
+      () => {
+        expect(authService.signTokens).not.toHaveBeenCalled();
+        expect(authService.setTokenCookies).not.toHaveBeenCalled();
+        expect(mockResponse.redirect).toHaveBeenCalledWith(
+          'http://localhost:3000/dashboard',
+        );
+      },
+    );
+  });
+
+  // Negative Case 9: Invalid or Expired Invite Link
+  it('AUTH-12 | Invalid or expired invite token | Expected: BadRequestException', async () => {
+    const inviteToken = 'expired.invite.token';
+
+    (inviteService.acceptInvite as jest.Mock).mockRejectedValueOnce(
+      new BadRequestException('Invalid or expired invite link'),
+    );
+
+    let error: any;
+    try {
+      await controller.acceptInvite(inviteToken, mockResponse as Response);
+    } catch (err) {
+      error = err;
+    }
+
+    assertAndReport(
+      {
+        id: 'AUTH-12',
+        name: 'Invalid or expired invite link rejection',
+        scenario: `token=${inviteToken}`,
+        expected:
+          'HTTP 400 BadRequestException with "Invalid or expired invite link"',
+        actual: `HTTP ${error?.status || 400} BadRequest, message="${error?.message}"`,
+      },
+      () => {
+        expect(error).toBeInstanceOf(BadRequestException);
+        expect(error.message).toBe('Invalid or expired invite link');
+        expect(authService.setTokenCookies).not.toHaveBeenCalled();
       },
     );
   });

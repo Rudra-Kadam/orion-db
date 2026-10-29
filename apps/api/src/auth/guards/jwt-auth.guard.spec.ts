@@ -38,7 +38,7 @@ describe('JwtAuthGuard', () => {
 
   // Negative Case 1: Unauthenticated request (no cookie)
   it('GUARD-01 | Unauthenticated access to protected endpoint | Expected: Access denied (401)', () => {
-    const { request, switchToHttp } = createMockContext({});
+    const { switchToHttp } = createMockContext({});
     const context = { switchToHttp } as unknown as ExecutionContext;
 
     let error: any;
@@ -65,7 +65,7 @@ describe('JwtAuthGuard', () => {
 
   // Negative Case 2: Tampered or expired token
   it('GUARD-02 | Invalid or expired token | Expected: Access denied (401)', () => {
-    const { request, switchToHttp } = createMockContext({
+    const { switchToHttp } = createMockContext({
       [COOKIE_KEYS.ACCESS_TOKEN]: 'expired-or-tampered-token',
     });
     const context = { switchToHttp } as unknown as ExecutionContext;

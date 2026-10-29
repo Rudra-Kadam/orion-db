@@ -144,6 +144,6 @@ export class InviteService {
       role: 'developer',
     });
 
-    return { message: 'Invite accepted', email: user.email };
+    return { message: 'Invite accepted', email: user.email, user };
   }
 }
