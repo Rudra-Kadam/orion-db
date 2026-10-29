@@ -59,6 +59,21 @@ export class ProjectAuthController {
     return res.redirect(url);
   }
 
+  private buildOAuthRedirectUrl(siteUrl: string, accessToken: string): string {
+    const fragmentParams = new URLSearchParams({
+      access_token: accessToken,
+      token_type: 'bearer',
+    });
+    try {
+      const url = new URL(siteUrl);
+      url.hash = fragmentParams.toString();
+      return url.toString();
+    } catch {
+      const cleanUrl = siteUrl.replace(/\/+$/, '');
+      return `${cleanUrl}/#${fragmentParams.toString()}`;
+    }
+  }
+
   @Get('google/callback')
   async googleCallback(
     @Param('projectSlug') projectSlug: string,
@@ -71,7 +86,7 @@ export class ProjectAuthController {
     );
     const webUrl =
       await this.projectAuthService.getSiteUrlForProject(projectSlug);
-    return res.redirect(`${webUrl}/?access_token=${result.accessToken}`);
+    return res.redirect(this.buildOAuthRedirectUrl(webUrl, result.accessToken));
   }
 
   @Get('github')
@@ -106,6 +121,6 @@ export class ProjectAuthController {
     );
     const webUrl =
       await this.projectAuthService.getSiteUrlForProject(projectSlug);
-    return res.redirect(`${webUrl}/?access_token=${result.accessToken}`);
+    return res.redirect(this.buildOAuthRedirectUrl(webUrl, result.accessToken));
   }
 }

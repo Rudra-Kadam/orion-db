@@ -11,7 +11,37 @@ export interface AuthResult {
 export class OrionAuth {
   private currentToken: string | null = null;
 
-  constructor(private projectUrl: string) {}
+  constructor(private projectUrl: string) {
+    if (typeof window !== 'undefined') {
+      this.setSessionFromUrl();
+    }
+  }
+
+  setSessionFromUrl(): AuthResult | null {
+    if (typeof window === 'undefined') return null;
+
+    const hash = window.location.hash.startsWith('#')
+      ? window.location.hash.slice(1)
+      : window.location.hash;
+    const hashParams = new URLSearchParams(hash);
+    let token = hashParams.get('access_token');
+
+    if (!token) {
+      const searchParams = new URLSearchParams(window.location.search);
+      token = searchParams.get('access_token');
+    }
+
+    if (!token) return null;
+
+    this.currentToken = token;
+    const user = this.getUser();
+    if (!user) {
+      this.currentToken = null;
+      return { data: null, error: 'Invalid token payload' };
+    }
+
+    return { data: { user, accessToken: token }, error: null };
+  }
 
   async signUp(credentials: {
     email: string;
